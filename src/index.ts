@@ -1,22 +1,22 @@
-import express = require('express');
-import expressWs = require('express-ws');
-import { WebSocket } from 'ws';
-import { ExpressWebSocketAdapter } from './express-websocket/express-web-socket-adapter.js';
+import ws from 'ws';
+
+import { ExpressTinyWsAppBuilder } from './tiny-ws/tiny-ws-builder.js';
+import { BroadcastDuplexStreamHandlerEndpoint } from './ws-endpoints/echo-duplex-stream-endpoint-handler.js';
 import { FixedTimeIntervalResponseEndpoint } from './ws-endpoints/fixed-time-interval-response-endpoint-handler.js';
-const expressApp = express();
-const app = expressWs(expressApp).app;
 
-const adapter = new ExpressWebSocketAdapter();
+declare global {
+  namespace Express {
+    export interface Request {
+      ws: () => Promise<ws>;
+    }
+  }
+}
 
-app.ws('/echo', function (ws: WebSocket, req: express.Request) {
-  const handler = adapter.adapt(new FixedTimeIntervalResponseEndpoint().getHandler, {
-    handler: new FixedTimeIntervalResponseEndpoint().getHandler
-  });
-  handler(ws, req);
-
-  //   ws.on('message', function (msg: any) {
-  //     ws.send(msg + '123');
-  //   });
-});
+const app = new ExpressTinyWsAppBuilder()
+  .withAppEndpoints('v1', {
+    '/time': new FixedTimeIntervalResponseEndpoint(),
+    '/echo': new BroadcastDuplexStreamHandlerEndpoint()
+  })
+  .build();
 
 app.listen(8080);

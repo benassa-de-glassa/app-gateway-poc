@@ -3,30 +3,40 @@ import { WebSocket } from 'ws';
 import { IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/id-generator.model.js';
 import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/uuid-v4-id-generator.js';
 
-import { Handler } from '../model/get-stream-handler.js';
-import { catchError, EMPTY, Observable, Subscription, tap } from 'rxjs';
+import { DuplexStreamHandler } from '../model/get-stream-handler.js';
+import { catchError, EMPTY, Subscription, tap } from 'rxjs';
 
-export type ExpressWebSocketHandler = (socket: WebSocket, request: express.Request) => Promise<void>;
+export type ExpressHttpHandler = (
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
+) => Promise<void>;
+
+export type ExpressWebSocketHandler = (
+  socket: WebSocket,
+  request: express.Request,
+  response: express.Response,
+  next: express.NextFunction
+) => Promise<void>;
 
 export class ExpressWebSocketAdapter {
   private readonly correlationIdGenerator: IdGenerator = new UUIDv4IdGenerator();
 
   public adapt(
-    websocketHandler: Handler,
+    websocketHandler: DuplexStreamHandler,
     pathEndpoints: {
-      handler?: Handler;
+      streamHandler?: DuplexStreamHandler;
     }
   ): ExpressWebSocketHandler {
     return async (socket: WebSocket, request: express.Request) => {
-      let stream$: Observable<unknown> | undefined;
       try {
-        ({ stream$ } = await websocketHandler.call(pathEndpoints, {
+        const { stream$ } = await websocketHandler.call(pathEndpoints, {
           body: request.body,
           lowercaseHeaders: request.headers,
           urlParameters: request.params,
           queryParameters: request.query,
           correlationId: this.correlationIdGenerator.generatedId()
-        }));
+        });
 
         let subscription: Subscription;
         if (stream$ != null) {
