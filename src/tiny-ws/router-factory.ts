@@ -45,7 +45,7 @@ export class RouterFactory {
         } else if (deleteHandler != null) {
           route.delete(this.expressHttpAdapter.expressHandler(deleteHandler, handler));
         } else if (streamHandler != null) {
-          router.use(endpoint, tinyws(), this.expressWsAdapter.adapt(streamHandler, handler));
+          router.use(endpoint, this.expressWsAdapter.adapt(streamHandler, handler));
         }
       });
     });

@@ -5,6 +5,7 @@ import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilit
 import { DuplexStreamHandler } from '../model/get-stream-handler.js';
 import { tap } from 'rxjs';
 import { TinyWSRequest } from 'tinyws';
+import { WebSocket, WebSocketServer } from 'ws';
 
 export type TinyWsHttpHandler = (
   request: express.Request,
@@ -27,7 +28,21 @@ export class TinyWsWebSocketAdapter {
       streamHandler?: DuplexStreamHandler;
     }
   ): TinyWsWebSocketHandler {
-    return async (request: express.Request & TinyWSRequest) => {
+    return async (request: express.Request & { ws: () => Promise<WebSocket>; wss: WebSocketServer }) => {
+      const wss = new WebSocketServer({ noServer: true });
+      const upgradeHeader = (request.headers.upgrade || '').split(',').map(s => s.trim());
+
+      // When upgrade header contains "websocket" it's index is 0
+      if (upgradeHeader.indexOf('websocket') === 0) {
+        request.ws = () =>
+          new Promise(resolve => {
+            wss.handleUpgrade(request, request.socket, Buffer.alloc(0), ws => {
+              wss.emit('connection', ws, request);
+              resolve(ws);
+            });
+          });
+      }
+
       const socket = await request.ws();
       socket.on('message', (event: MessageEvent) => {
         duplexStreamHandler.handleMessage.call(pathEndpoints, {
