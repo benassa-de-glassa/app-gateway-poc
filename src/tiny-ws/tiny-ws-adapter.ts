@@ -3,7 +3,7 @@ import { IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id
 import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/uuid-v4-id-generator.js';
 
 import { DuplexStreamHandler } from '../model/get-stream-handler.js';
-import { EMPTY, tap } from 'rxjs';
+import { EMPTY, filter, tap } from 'rxjs';
 
 import { WebSocket, WebSocketServer } from 'ws';
 
@@ -34,8 +34,9 @@ export class WebSocketAdapter {
             resolve(ws);
           });
         });
+        socket['clientId'] = request.headers['sec-websocket-key'];
+        console.warn(socket['clientId']);
 
-        console.log(JSON.stringify(request.headers, undefined, 2));
         socket.on('message', (event: MessageEvent) => {
           duplexStreamHandler.handleMessage.call(pathEndpoints, {
             clientId: request.headers['sec-websocket-key'],
@@ -48,11 +49,21 @@ export class WebSocketAdapter {
           });
         });
 
+        const messageSubscription = (duplexStreamHandler.sendMessage$ ?? EMPTY)
+          .pipe(
+            filter((message: { targets: Set<string>; message: any }) => message.targets.has(socket['clientId'])),
+            tap((message: { targets: Set<string>; message: any }) => socket.send(message.message))
+          )
+          .subscribe();
+
         const broadcastSubscription = (duplexStreamHandler.broadcastMessage$ ?? EMPTY)
           .pipe(tap((message: string) => socket.send(message)))
           .subscribe();
 
-        socket.on('close', () => broadcastSubscription.unsubscribe());
+        socket.on('close', () => {
+          broadcastSubscription.unsubscribe();
+          messageSubscription.unsubscribe();
+        });
       }
     };
   }

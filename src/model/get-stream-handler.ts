@@ -56,7 +56,7 @@ export interface IncomingStreamHandler {
 }
 export interface OutgoingStreamHandler {
   broadcastMessage$?: Observable<any>;
-  sendMessage$?: Observable<{ targets: string[]; message: any }>;
+  sendMessage$?: Observable<{ targets: Set<string>; message: any }>;
 }
 export type DuplexStreamHandler = IncomingStreamHandler & OutgoingStreamHandler;
 
