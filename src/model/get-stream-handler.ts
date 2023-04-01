@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable } from '@benassa-de-glassa/node-utilities/dist/models/observable.model';
 
 export interface QueryParameters {
   [key: string]: undefined | string | string[] | QueryParameters | QueryParameters[];
@@ -44,6 +44,7 @@ export interface PutEndpointHandler {
 }
 
 export interface WebSocketRequest extends EndpointRequest {
+  clientId: string;
   message?: any;
 }
 export interface WebSocketResponse extends EndpointResponse {
@@ -54,7 +55,8 @@ export interface IncomingStreamHandler {
   handleMessage: (request: WebSocketRequest) => void;
 }
 export interface OutgoingStreamHandler {
-  sendMessage$: Observable<any>;
+  broadcastMessage$?: Observable<any>;
+  sendMessage$?: Observable<{ targets: string[]; message: any }>;
 }
 export type DuplexStreamHandler = IncomingStreamHandler & OutgoingStreamHandler;
 

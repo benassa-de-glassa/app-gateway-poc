@@ -3,7 +3,7 @@ import { StreamEndpointHandler, WebSocketRequest } from '../model/get-stream-han
 
 export class FixedTimeIntervalResponseEndpoint implements StreamEndpointHandler {
   public streamHandler = {
-    sendMessage$: interval(1000).pipe(map(() => Date())),
+    broadcastMessage$: interval(1000).pipe(map(() => Date())),
     handleMessage: (request: WebSocketRequest) => {
       console.warn(request);
     }

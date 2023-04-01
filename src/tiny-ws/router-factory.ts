@@ -1,8 +1,7 @@
 import * as express from 'express';
-import { tinyws } from 'tinyws';
 import { HttpHandler, DuplexStreamHandler } from '../model/get-stream-handler.js';
 import { ExpressHandler, ExpressHttpAdapter } from './express-http-adapter.js';
-import { TinyWsWebSocketAdapter } from './tiny-ws-adapter.js';
+import { WebSocketAdapter } from './tiny-ws-adapter.js';
 
 export interface Endpoints {
   [endpoint: string]: {
@@ -23,7 +22,7 @@ export interface Route {
 
 export class RouterFactory {
   private readonly expressHttpAdapter = new ExpressHttpAdapter();
-  private readonly expressWsAdapter = new TinyWsWebSocketAdapter();
+  private readonly expressWsAdapter = new WebSocketAdapter();
 
   public getFor(route: Route): express.Router {
     const router = express.Router();

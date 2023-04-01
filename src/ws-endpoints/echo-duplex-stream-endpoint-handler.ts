@@ -3,11 +3,11 @@ import { StreamEndpointHandler, WebSocketRequest } from '../model/get-stream-han
 
 export class BroadcastDuplexStreamHandlerEndpoint implements StreamEndpointHandler {
   public get streamHandler() {
-    const sendMessage$ = new Subject<string>();
+    const broadcastMessage$ = new Subject<string>();
     const handleMessage = (request: WebSocketRequest) => {
-      sendMessage$.next(request.message);
+      broadcastMessage$.next(request.message);
     };
 
-    return { sendMessage$, handleMessage };
+    return { broadcastMessage$, handleMessage };
   }
 }
