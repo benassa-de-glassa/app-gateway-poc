@@ -35,7 +35,6 @@ export class WebSocketAdapter {
           });
         });
         socket['clientId'] = request.headers['sec-websocket-key'];
-        console.warn(socket['clientId']);
 
         socket.on('message', (event: MessageEvent) => {
           duplexStreamHandler.handleMessage.call(pathEndpoints, {
