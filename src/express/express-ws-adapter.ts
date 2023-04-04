@@ -2,7 +2,7 @@ import * as express from 'express';
 import { IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/id-generator.model.js';
 import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/uuid-v4-id-generator.js';
 
-import { DuplexStreamHandler } from '../model/get-stream-handler.js';
+import { DuplexStreamHandler } from '../model/handlers.js';
 import { EMPTY, filter, tap } from 'rxjs';
 
 import { WebSocket, WebSocketServer } from 'ws';
@@ -13,9 +13,11 @@ export type ExpressWsHandler = (
   next: express.NextFunction
 ) => Promise<void>;
 
-export class WebSocketAdapter {
+export class ExpressWebSocketAdapter {
   private readonly correlationIdGenerator: IdGenerator = new UUIDv4IdGenerator();
   private readonly wss = new WebSocketServer({ noServer: true });
+
+  public constructor(private readonly correlationIdHeader: string) {}
 
   public adapt(
     duplexStreamHandler: DuplexStreamHandler,
@@ -39,12 +41,12 @@ export class WebSocketAdapter {
         socket.on('message', (event: MessageEvent) => {
           duplexStreamHandler.handleMessage.call(pathEndpoints, {
             clientId: request.headers['sec-websocket-key'],
-            message: event.toString(),
+            message: event?.toString() ?? '',
             body: request.body,
             lowercaseHeaders: request.headers,
             urlParameters: request.params,
             queryParameters: request.query,
-            correlationId: this.correlationIdGenerator.generatedId()
+            corrlationId: request.headers[this.correlationIdHeader] ?? this.correlationIdGenerator.generatedId()
           });
         });
 
@@ -59,6 +61,7 @@ export class WebSocketAdapter {
           .pipe(tap((message: string) => socket.send(message)))
           .subscribe();
 
+        socket.emit('message');
         socket.on('close', () => {
           broadcastSubscription.unsubscribe();
           messageSubscription.unsubscribe();

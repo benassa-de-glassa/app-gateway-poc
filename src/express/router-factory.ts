@@ -1,8 +1,8 @@
 import * as express from 'express';
-import { tinyws } from 'tinyws';
-import { HttpHandler, DuplexStreamHandler } from '../model/get-stream-handler.js';
-import { ExpressHandler, ExpressHttpAdapter } from './express-http-adapter.js';
+import { HttpHandler, DuplexStreamHandler } from '../model/handlers.js';
+import { ExpressHttpAdapter } from './express-http-adapter.js';
 import { ExpressWebSocketAdapter } from './express-ws-adapter.js';
+import { ExpressHandler } from './express-handler.js';
 
 export interface Endpoints {
   [endpoint: string]: {
@@ -22,8 +22,13 @@ export interface Route {
 }
 
 export class RouterFactory {
-  private readonly expressHttpAdapter = new ExpressHttpAdapter();
-  private readonly expressWsAdapter = new ExpressWebSocketAdapter();
+  private readonly expressHttpAdapter: ExpressHttpAdapter;
+  private readonly expressWsAdapter: ExpressWebSocketAdapter;
+
+  public constructor(correlationIdHeader: string) {
+    this.expressHttpAdapter = new ExpressHttpAdapter(correlationIdHeader);
+    this.expressWsAdapter = new ExpressWebSocketAdapter(correlationIdHeader);
+  }
 
   public getFor(route: Route): express.Router {
     const router = express.Router();
@@ -45,7 +50,7 @@ export class RouterFactory {
         } else if (deleteHandler != null) {
           route.delete(this.expressHttpAdapter.expressHandler(deleteHandler, handler));
         } else if (streamHandler != null) {
-          router.use(endpoint, tinyws(), this.expressWsAdapter.adapt(streamHandler, handler));
+          router.use(endpoint, this.expressWsAdapter.adapt(streamHandler, handler));
         }
       });
     });

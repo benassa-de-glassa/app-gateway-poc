@@ -2,12 +2,12 @@ import urljoin from 'url-join';
 
 import express from 'express';
 
-import { ExpressHttpHandler } from '../express-websocket/express-ws-adapter.js';
 import { Endpoints, Route, RouterFactory } from './router-factory.js';
+import { ExpressHandler } from './express-handler.js';
 
 interface EndpointCollection {
   [consumer: string]: {
-    [prefix: string]: { [versionTag: string]: { endpoints: Endpoints[]; middleware: ExpressHttpHandler[] } };
+    [prefix: string]: { [versionTag: string]: { endpoints: Endpoints[]; middleware: ExpressHandler[] } };
   };
 }
 
@@ -18,9 +18,9 @@ enum Consumer {
   pubsub = 'pubsub'
 }
 
-export class ExpressTinyWsAppBuilder {
+export class ExpressAppBuilder {
   private readonly endpoints: EndpointCollection = {};
-  private readonly routerFactory = new RouterFactory();
+  private readonly routerFactory = new RouterFactory('');
 
   private readonly defaultPrefix = {
     [Consumer.app]: '',
@@ -34,6 +34,7 @@ export class ExpressTinyWsAppBuilder {
     [Consumer.public]: [],
     [Consumer.pubsub]: []
   };
+
   public build(): express.Application {
     const app = express();
 
@@ -42,7 +43,7 @@ export class ExpressTinyWsAppBuilder {
     return app;
   }
 
-  public withAppEndpoints(versionTag: string, endpoints: Endpoints): ExpressTinyWsAppBuilder {
+  public withAppEndpoints(versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
     const consumer = Consumer.app;
     return this.withDefaultRoute(consumer, versionTag).withEndpoints(
       consumer,
@@ -52,7 +53,7 @@ export class ExpressTinyWsAppBuilder {
     );
   }
 
-  private withDefaultRoute(consumer: Consumer, versionTag: string): ExpressTinyWsAppBuilder {
+  private withDefaultRoute(consumer: Consumer, versionTag: string): ExpressAppBuilder {
     const prefix = this.defaultPrefix[consumer];
     if (this.endpoints[consumer]?.[prefix]?.[versionTag] != null) {
       return this;
@@ -65,7 +66,7 @@ export class ExpressTinyWsAppBuilder {
     prefix: string,
     versionTag: string,
     endpoints: Endpoints
-  ): ExpressTinyWsAppBuilder {
+  ): ExpressAppBuilder {
     const route = this.endpoints[consumer]?.[prefix]?.[versionTag];
     if (route == null) {
       throw new Error(`Missing route ${consumer} ${prefix} ${versionTag}`);
@@ -79,8 +80,8 @@ export class ExpressTinyWsAppBuilder {
     consumer: Consumer,
     prefix: string,
     versionTag: string,
-    middleware: ExpressHttpHandler[]
-  ): ExpressTinyWsAppBuilder {
+    middleware: ExpressHandler[]
+  ): ExpressAppBuilder {
     const route = this.endpoints[consumer]?.[prefix]?.[versionTag];
     if (route != null) {
       throw new Error(`Route ${consumer} ${prefix} ${versionTag} already created`);
