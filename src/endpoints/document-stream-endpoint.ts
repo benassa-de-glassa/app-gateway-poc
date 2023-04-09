@@ -1,9 +1,9 @@
 import { DocumentStreamReadService } from '@benassa-de-glassa/node-utilities/dist/document-service/model/document-stream-read-service.model';
 
-import { StreamEndpointHandler, WebSocketRequest } from '../model/handlers';
+import { StreamEndpoint, WebSocketRequest } from '../model/handlers';
 import { Observable, Subject, filter, switchMap } from 'rxjs';
 
-export class DocumentStreamEndpoint implements StreamEndpointHandler {
+export class DocumentStreamEndpoint implements StreamEndpoint {
   public constructor(
     private readonly documentStreamService: DocumentStreamReadService<{ id: string; message: string }>
   ) {}

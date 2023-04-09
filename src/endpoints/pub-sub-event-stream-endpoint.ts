@@ -1,9 +1,9 @@
 import { Subscriber } from '@benassa-de-glassa/node-utilities/dist/pub-sub/model/subscriber.model';
 import { Publisher } from '@benassa-de-glassa/node-utilities/dist/pub-sub/model/publisher.model';
-import { StreamEndpointHandler, WebSocketRequest } from '../model/handlers';
+import { StreamEndpoint, WebSocketRequest } from '../model/handlers';
 import { map } from 'rxjs';
 
-export class PubSubEventStreamEndpoint implements StreamEndpointHandler {
+export class PubSubEventStreamEndpoint implements StreamEndpoint {
   public constructor(private readonly eventSubscriber: Subscriber, private readonly eventPublisher: Publisher) {}
 
   public get streamHandler() {

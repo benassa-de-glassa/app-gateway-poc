@@ -27,19 +27,19 @@ export interface EndpointResponse {
 
 export type HttpHandler = (request: EndpointRequest) => Promise<EndpointResponse>;
 
-export interface GetEndpointHandler {
+export interface GetEndpoint {
   getHandler: HttpHandler;
 }
-export interface PostEndpointHandler {
+export interface PostEndpoint {
   postHandler: HttpHandler;
 }
-export interface PatchEndpointHandler {
+export interface PatchEndpoint {
   patchHandler: HttpHandler;
 }
-export interface DeleteEndpointHandler {
+export interface DeleteEndpoint {
   deleteHandler: HttpHandler;
 }
-export interface PutEndpointHandler {
+export interface PutEndpoint {
   putHandler: HttpHandler;
 }
 
@@ -60,6 +60,6 @@ export interface OutgoingStreamHandler {
 }
 export type DuplexStreamHandler = IncomingStreamHandler & OutgoingStreamHandler;
 
-export interface StreamEndpointHandler {
+export interface StreamEndpoint {
   streamHandler: DuplexStreamHandler;
 }

@@ -28,7 +28,7 @@ export class ExpressAppBuilder {
     [Consumer.public]: '',
     [Consumer.pubsub]: ''
   };
-  private readonly defaultMiddleware = {
+  private readonly defaultMiddleware: { [key in Consumer]: ExpressHandler[] } = {
     [Consumer.internal]: [],
     [Consumer.app]: [],
     [Consumer.public]: [],
