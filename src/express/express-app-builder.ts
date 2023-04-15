@@ -101,6 +101,16 @@ export class ExpressAppBuilder {
     );
   }
 
+  public withApiEndpoints(versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    const consumer = Consumer.api;
+    return this.withDefaultRoute(consumer, versionTag).withEndpoints(
+      consumer,
+      this.defaultPrefix[consumer],
+      versionTag,
+      endpoints
+    );
+  }
+
   public withPublicEndpoints(versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
     const consumer = Consumer.public;
     return this.withDefaultRoute(consumer, versionTag).withEndpoints(
@@ -141,6 +151,14 @@ export class ExpressAppBuilder {
 
   public withInternalRouteEndpoints(prefix: string, versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
     return this.withEndpoints(Consumer.internal, prefix, versionTag, endpoints);
+  }
+
+  public withApiRoute(prefix: string, versionTag: string, middleware: ExpressHandler[]): ExpressAppBuilder {
+    return this.withRoute(Consumer.api, prefix, versionTag, middleware);
+  }
+
+  public withApiRouteEndpoints(prefix: string, versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    return this.withEndpoints(Consumer.api, prefix, versionTag, endpoints);
   }
 
   private withEndpoints(
