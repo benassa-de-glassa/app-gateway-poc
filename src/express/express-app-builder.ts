@@ -4,6 +4,12 @@ import express from 'express';
 
 import { Endpoints, Route, RouterFactory } from './router-factory.js';
 import { ExpressHandler } from './express-handler.js';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { handleAuthenticationError } from './error-handlers/express-authentication-handler.js';
+import { handleAuthorizationError } from './error-handlers/express-authorization-handler.js';
+import { handleInvalidRequestError } from './error-handlers/invalid-request-handler.js';
+import { handleNotFoundError } from './error-handlers/not-found-handler.js';
 
 interface EndpointCollection {
   [consumer: string]: {
@@ -33,9 +39,12 @@ export class ExpressAppBuilder {
   };
 
   public build(): express.Application {
-    const app = express();
+    const app = this.createApp();
 
+    this.setupHealthRoute(app);
     this.setupContentRoutes(app);
+    this.setupFallbackRoute(app);
+    this.setupErrorHandlers(app);
 
     return app;
   }
@@ -149,10 +158,39 @@ export class ExpressAppBuilder {
     });
   }
 
+  private setupHealthRoute(app: express.Application): void {
+    app.get('/health', (_request: express.Request, response: express.Response) => {
+      response.sendStatus(200);
+    });
+  }
+
+  private setupFallbackRoute(app: express.Application): void {
+    app.all('*', (_request: express.Request, response: express.Response) => {
+      response.sendStatus(404);
+    });
+  }
+
+  private createApp(): express.Application {
+    const app = express();
+    app.enable('trust proxy');
+    app.use(cors({ origin: true }));
+    app.use(cookieParser());
+    app.use(express.json());
+    return app;
+  }
+
   private setupRoute(app: express.Application, route: Route): void {
     const router = this.routerFactory.getFor(route);
     app.use(route.root, router);
   }
+
+  private setupErrorHandlers(app: express.Application): void {
+    app.use(handleAuthenticationError);
+    app.use(handleAuthorizationError);
+    app.use(handleNotFoundError);
+    app.use(handleInvalidRequestError);
+  }
+
   private validateEndpoints(endpoints: Endpoints): void {
     Object.keys(endpoints).forEach(e => {
       if (e.length > 0 && e[0] !== '/') {
