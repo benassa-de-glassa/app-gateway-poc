@@ -1,42 +1,42 @@
-import redis, { RedisClientType } from 'redis';
 import { MongoClient } from 'mongodb';
-import rethinkdb, { Connection } from 'rethinkdb';
+import * as redis from 'redis';
 
-import { RedisPublisher } from '@benassa-de-glassa/node-utilities/dist/pub-sub/redis/redis-publisher.js';
-import { RedisSubscriber } from '@benassa-de-glassa/node-utilities/dist/pub-sub/redis/redis-subscriber.js';
-import { RethinkDbStreamReadService } from '@benassa-de-glassa/node-utilities/dist/document-service/rethink-db/rethink-db-stream-read.service.js';
+import { RedisPublisher } from '@benassa-de-glassa/node-utilities/dist/pub-sub/redis/redis-publisher';
+import { RedisSubscriber } from '@benassa-de-glassa/node-utilities/dist/pub-sub/redis/redis-subscriber';
+import { ConsoleLogger } from '@benassa-de-glassa/node-utilities/dist/logger/console/console-logger';
 
-import { ExpressAppBuilder } from './express/express-app-builder.js';
-import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-stream-endpoint-handler.js';
-import { FixedTimeIntervalResponseEndpoint } from './endpoints/fixed-time-interval-response-endpoint-handler.js';
-import { PubSubEventStreamEndpoint } from './endpoints/pub-sub-event-stream-endpoint.js';
-import { DocumentStreamEndpoint } from './endpoints/document-stream-endpoint.js';
+import { ExpressAppBuilder } from './express/express-app-builder';
+import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-stream-endpoint-handler';
+import { FixedTimeIntervalResponseEndpoint } from './endpoints/fixed-time-interval-response-endpoint-handler';
+import { PubSubEventStreamEndpoint } from './endpoints/pub-sub-event-stream-endpoint';
+import { NoopTokenVerifier } from './express/token-verifiers/noop-token-verifier';
 
-const redisClient: RedisClientType = redis.createClient();
-const subscriber: RedisClientType = redisClient.duplicate();
-await redisClient.connect();
-await subscriber.connect();
+const run = async () => {
+  const redisClient: redis.RedisClientType = redis.createClient();
+  const subscriber: redis.RedisClientType = redisClient.duplicate();
+  await redisClient.connect();
+  await subscriber.connect();
 
-const rethinkdbConnection: Connection = await rethinkdb.connect({ host: 'localhost', port: 28015 });
+  const mongoDbConnection = new MongoClient('mongodb://localhost:27017');
+  await mongoDbConnection.connect();
 
-const messagestreamService = new RethinkDbStreamReadService(
-  rethinkdbConnection,
-  rethinkdb.db('sample-service').table('messages')
-);
+  const app = new ExpressAppBuilder(
+    new NoopTokenVerifier(),
+    new NoopTokenVerifier(),
+    new NoopTokenVerifier(),
+    new ConsoleLogger('sample-service')
+  )
+    .withAppEndpoints('v1', {
+      '/time': new FixedTimeIntervalResponseEndpoint(),
+      '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
+      '/pub-sub-streaming': new PubSubEventStreamEndpoint(
+        new RedisSubscriber(subscriber, 'test'),
+        new RedisPublisher(redisClient, 'test')
+      )
+    })
+    .build();
 
-const mongoDbConnection = new MongoClient('mongodb://localhost:27017');
-await mongoDbConnection.connect();
+  app.listen(8008, () => 'listening on 8008');
+};
 
-const app = new ExpressAppBuilder()
-  .withAppEndpoints('v1', {
-    '/time': new FixedTimeIntervalResponseEndpoint(),
-    '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
-    '/document-stream': new DocumentStreamEndpoint(messagestreamService),
-    '/pub-sub-streaming': new PubSubEventStreamEndpoint(
-      new RedisSubscriber(subscriber, 'test'),
-      new RedisPublisher(redisClient, 'test')
-    )
-  })
-  .build();
-
-app.listen(8008, () => 'listening on 8008');
+run();

@@ -1,4 +1,6 @@
 import { Observable } from '@benassa-de-glassa/node-utilities/dist/models/observable.model';
+import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model/logger.model';
+import { AuthenticationToken } from '../token-verifiers/token-verifier';
 
 export interface QueryParameters {
   [key: string]: undefined | string | string[] | QueryParameters | QueryParameters[];
@@ -17,7 +19,6 @@ export interface EndpointRequest {
   lowercaseHeaders: Headers;
   urlParameters: UrlParameters;
   queryParameters: QueryParameters;
-  correlationId: string;
 }
 
 export interface EndpointResponse {
@@ -25,7 +26,11 @@ export interface EndpointResponse {
   code: number;
 }
 
-export type HttpHandler = (request: EndpointRequest) => Promise<EndpointResponse>;
+export type HttpHandler = (
+  request: EndpointRequest,
+  token: Record<string, unknown>,
+  logger: Logger
+) => Promise<EndpointResponse>;
 
 export interface GetEndpoint {
   getHandler: HttpHandler;
@@ -52,7 +57,7 @@ export interface WebSocketResponse extends EndpointResponse {
 }
 
 export interface IncomingStreamHandler {
-  handleMessage: (request: WebSocketRequest) => void;
+  handleMessage: (request: WebSocketRequest, token: AuthenticationToken, logger: Logger) => void;
 }
 export interface OutgoingStreamHandler {
   broadcastMessage$?: Observable<any>;

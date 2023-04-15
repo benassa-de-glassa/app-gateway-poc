@@ -1,15 +1,19 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "rootDir": "src",
-    "isolatedModules": true,
-    "outDir": "dist",
-    "preserveSymlinks": true
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "allowUnusedLabels": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "outDir": "lib",
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017"
   },
-  "include": ["src/**/*"]
+  "compileOnSave": true,
+  "include": ["src", "tests"]
 }

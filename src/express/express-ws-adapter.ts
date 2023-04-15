@@ -1,11 +1,10 @@
 import * as express from 'express';
-import { IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/id-generator.model.js';
-import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/uuid-v4-id-generator.js';
-
-import { DuplexStreamHandler } from '../model/handlers.js';
 import { EMPTY, filter, tap } from 'rxjs';
-
 import { WebSocket, WebSocketServer } from 'ws';
+
+import { DuplexStreamHandler } from './model/handlers';
+import { AuthenticationEnrichment } from './middleware/authentication-middleware-factory';
+import { LoggerEnrichment } from './middleware/logger-middleware-factory';
 
 export type ExpressWsHandler = (
   request: express.Request,
@@ -14,10 +13,7 @@ export type ExpressWsHandler = (
 ) => Promise<void>;
 
 export class ExpressWebSocketAdapter {
-  private readonly correlationIdGenerator: IdGenerator = new UUIDv4IdGenerator();
   private readonly wss = new WebSocketServer({ noServer: true });
-
-  public constructor(private readonly correlationIdHeader: string) {}
 
   public adapt(
     duplexStreamHandler: DuplexStreamHandler,
@@ -25,12 +21,12 @@ export class ExpressWebSocketAdapter {
       streamHandler?: DuplexStreamHandler;
     }
   ): ExpressWsHandler {
-    return async (request: express.Request) => {
+    return async (request: express.Request & Partial<AuthenticationEnrichment> & Partial<LoggerEnrichment>) => {
       const upgradeHeader = (request.headers.upgrade || '').split(',').map(s => s.trim());
 
       // When upgrade header contains "websocket" its index is 0
       if (upgradeHeader.indexOf('websocket') === 0) {
-        const socket = await new Promise<WebSocket>((resolve, reject) => {
+        const socket = await new Promise<WebSocket & Partial<{ clientId: string }>>((resolve, reject) => {
           this.wss.handleUpgrade(request, request.socket, Buffer.alloc(0), ws => {
             try {
               this.wss.emit('connection', ws, request);
@@ -43,20 +39,28 @@ export class ExpressWebSocketAdapter {
         socket['clientId'] = request.headers['sec-websocket-key'];
 
         socket.on('message', (event: MessageEvent) => {
-          duplexStreamHandler.handleMessage.call(pathEndpoints, {
-            clientId: request.headers['sec-websocket-key'],
-            message: event?.toString() ?? '',
-            body: request.body,
-            lowercaseHeaders: request.headers,
-            urlParameters: request.params,
-            queryParameters: request.query,
-            corrlationId: request.headers[this.correlationIdHeader] ?? this.correlationIdGenerator.generatedId()
-          });
+          if (request.token == null || request.logger == null) {
+            throw new Error('Middleware setup incorrectly');
+          }
+
+          duplexStreamHandler.handleMessage.call(
+            pathEndpoints,
+            {
+              clientId: request.headers['sec-websocket-key'] ?? '',
+              message: event?.toString() ?? '',
+              body: request.body,
+              lowercaseHeaders: request.headers,
+              urlParameters: request.params,
+              queryParameters: request.query
+            },
+            request.token,
+            request.logger
+          );
         });
 
         const messageSubscription = (duplexStreamHandler.sendMessage$ ?? EMPTY)
           .pipe(
-            filter((message: { targets: Set<string>; message: any }) => message.targets.has(socket['clientId'])),
+            filter((message: { targets: Set<string>; message: any }) => message.targets.has(socket['clientId'] ?? '')),
             tap((message: { targets: Set<string>; message: any }) => socket.send(message.message))
           )
           .subscribe();

@@ -1,6 +1,6 @@
 import { Subscriber } from '@benassa-de-glassa/node-utilities/dist/pub-sub/model/subscriber.model';
 import { Publisher } from '@benassa-de-glassa/node-utilities/dist/pub-sub/model/publisher.model';
-import { StreamEndpoint, WebSocketRequest } from '../model/handlers';
+import { StreamEndpoint, WebSocketRequest } from '../express/model/handlers';
 import { map } from 'rxjs';
 
 export class PubSubEventStreamEndpoint implements StreamEndpoint {

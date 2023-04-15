@@ -1,4 +1,4 @@
-import express from 'express';
+import * as express from 'express';
 import { AuthorizationError } from '../../errors/authorization-error';
 
 import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model';

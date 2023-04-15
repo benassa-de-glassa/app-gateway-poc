@@ -1,14 +1,22 @@
-import express from 'express';
-import urljoin from 'url-join';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
+import urlJoin = require('url-join');
 
-import { Endpoints, Route, RouterFactory } from './router-factory.js';
-import { ExpressHandler } from './express-handler.js';
-import { handleAuthenticationError } from './error-handlers/express-authentication-handler.js';
-import { handleAuthorizationError } from './error-handlers/express-authorization-handler.js';
-import { handleInvalidRequestError } from './error-handlers/invalid-request-handler.js';
-import { handleNotFoundError } from './error-handlers/not-found-handler.js';
+import * as express from 'express';
+import * as cors from 'cors';
+import * as cookieParser from 'cookie-parser';
+
+import { LabelableLogger } from '@benassa-de-glassa/node-utilities/dist/logger/model/logger.model';
+import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/uuid-v4-id-generator';
+
+import { Endpoints, Route, RouterFactory } from './router-factory';
+import { ExpressHandler } from './express-handler';
+import { handleAuthenticationError } from './error-handlers/express-authentication-handler';
+import { handleAuthorizationError } from './error-handlers/express-authorization-handler';
+import { handleInvalidRequestError } from './error-handlers/invalid-request-handler';
+import { handleNotFoundError } from './error-handlers/not-found-handler';
+import { TokenVerifier } from './token-verifiers/token-verifier';
+import { LoggerMiddlewareFactory } from './middleware/logger-middleware-factory';
+import { AuthenticationMiddlewareFactory } from './middleware/authentication-middleware-factory';
+import { CorrelationIdMiddlewareFactory } from './middleware/correlation-id-middleware-factory';
 
 interface EndpointCollection {
   [consumer: string]: {
@@ -19,23 +27,48 @@ interface EndpointCollection {
 enum Consumer {
   app = 'app',
   internal = 'internal',
-  public = 'public'
+  public = 'public',
+  api = 'api'
 }
 
 export class ExpressAppBuilder {
   private readonly endpoints: EndpointCollection = {};
-  private readonly routerFactory = new RouterFactory('');
+  private readonly routerFactory = new RouterFactory();
+
+  private readonly loggingMiddlewareFactory: LoggerMiddlewareFactory;
+  private readonly correlationIdMiddlewareFactory = new CorrelationIdMiddlewareFactory(
+    new UUIDv4IdGenerator(),
+    'x-correlation-id'
+  );
 
   private readonly defaultPrefix = {
     [Consumer.app]: '',
     [Consumer.internal]: '',
-    [Consumer.public]: ''
+    [Consumer.public]: '',
+    [Consumer.api]: ''
   };
   private readonly defaultMiddleware: { [key in Consumer]: ExpressHandler[] } = {
     [Consumer.internal]: [],
     [Consumer.app]: [],
-    [Consumer.public]: []
+    [Consumer.public]: [],
+    [Consumer.api]: []
   };
+
+  public constructor(
+    internalTokenVerifier: TokenVerifier,
+    appTokenVerifier: TokenVerifier,
+    apiTokenVerifier: TokenVerifier,
+    logger: LabelableLogger
+  ) {
+    this.loggingMiddlewareFactory = new LoggerMiddlewareFactory(logger);
+    const authenticationMiddlewareFactory = new AuthenticationMiddlewareFactory();
+    this.defaultMiddleware = {
+      [Consumer.internal]: [authenticationMiddlewareFactory.getFor(internalTokenVerifier)],
+      [Consumer.app]: [authenticationMiddlewareFactory.getFor(appTokenVerifier)],
+      [Consumer.api]: [authenticationMiddlewareFactory.getFor(apiTokenVerifier)],
+      [Consumer.public]: []
+    };
+  }
 
   public build(): express.Application {
     const app = this.createApp();
@@ -148,7 +181,7 @@ export class ExpressAppBuilder {
       Object.entries(consumerEndpoints).forEach(([prefix, prefixEndpoints]) => {
         Object.entries(prefixEndpoints).forEach(([versionTag, { endpoints, middleware }]) => {
           this.setupRoute(app, {
-            root: urljoin('/', consumer, prefix, versionTag),
+            root: urlJoin('/', consumer, prefix, versionTag),
             endpoints,
             middleware
           });
@@ -172,6 +205,8 @@ export class ExpressAppBuilder {
   private createApp(): express.Application {
     const app = express();
     app.enable('trust proxy');
+    app.use(this.loggingMiddlewareFactory.get());
+    app.use(this.correlationIdMiddlewareFactory.get());
     app.use(cors({ origin: true }));
     app.use(cookieParser());
     app.use(express.json());

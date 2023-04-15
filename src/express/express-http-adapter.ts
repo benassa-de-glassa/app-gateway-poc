@@ -1,15 +1,11 @@
 import * as express from 'express';
 
-import { IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/id-generator.model.js';
-import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/uuid-v4-id-generator.js';
-
-import { HttpHandler } from '../model/handlers.js';
-import { ExpressHandler } from './express-handler.js';
+import { HttpHandler } from './model/handlers';
+import { ExpressHandler } from './express-handler';
+import { LoggerEnrichment } from './middleware/logger-middleware-factory';
+import { AuthenticationEnrichment } from './middleware/authentication-middleware-factory';
 
 export class ExpressHttpAdapter {
-  private readonly correlationIdGenerator: IdGenerator = new UUIDv4IdGenerator();
-
-  public constructor(private readonly correlationIdHeader: string) {}
   public expressHandler(
     handler: HttpHandler,
     pathEndpoints: {
@@ -20,17 +16,29 @@ export class ExpressHttpAdapter {
       deleteHandler?: HttpHandler;
     }
   ): ExpressHandler {
-    return async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    return async (
+      request: express.Request & Partial<AuthenticationEnrichment> & Partial<LoggerEnrichment>,
+      response: express.Response,
+      next: express.NextFunction
+    ) => {
+      if (request.token == null || request.logger == null) {
+        throw new Error('Middleware setup incorrectly');
+      }
+
       let payload: any;
       let code: number;
       try {
-        ({ payload, code } = await handler.call(pathEndpoints, {
-          body: request.body,
-          lowercaseHeaders: request.headers,
-          urlParameters: request.params,
-          queryParameters: request.query,
-          corrlationId: request.headers[this.correlationIdHeader] ?? this.correlationIdGenerator.generatedId()
-        }));
+        ({ payload, code } = await handler.call(
+          pathEndpoints,
+          {
+            body: request.body,
+            lowercaseHeaders: request.headers,
+            urlParameters: request.params,
+            queryParameters: request.query
+          },
+          request.token,
+          request.logger
+        ));
       } catch (error) {
         next(error);
         return;

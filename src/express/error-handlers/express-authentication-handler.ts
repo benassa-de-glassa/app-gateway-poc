@@ -1,7 +1,7 @@
-import express from 'express';
-import { AuthenticationError } from '../../errors/authentication-error';
-
+import * as express from 'express';
 import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model';
+
+import { AuthenticationError } from '../../errors/authentication-error';
 import { endRequest } from './end-request';
 
 export function handleAuthenticationError(

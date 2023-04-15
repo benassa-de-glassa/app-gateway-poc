@@ -1,8 +1,8 @@
 import * as express from 'express';
-import { HttpHandler, DuplexStreamHandler } from '../model/handlers.js';
-import { ExpressHttpAdapter } from './express-http-adapter.js';
-import { ExpressWebSocketAdapter } from './express-ws-adapter.js';
-import { ExpressHandler } from './express-handler.js';
+import { HttpHandler, DuplexStreamHandler } from './model/handlers';
+import { ExpressHttpAdapter } from './express-http-adapter';
+import { ExpressWebSocketAdapter } from './express-ws-adapter';
+import { ExpressHandler } from './express-handler';
 
 export interface Endpoints {
   [endpoint: string]: {
@@ -25,9 +25,9 @@ export class RouterFactory {
   private readonly expressHttpAdapter: ExpressHttpAdapter;
   private readonly expressWsAdapter: ExpressWebSocketAdapter;
 
-  public constructor(correlationIdHeader: string) {
-    this.expressHttpAdapter = new ExpressHttpAdapter(correlationIdHeader);
-    this.expressWsAdapter = new ExpressWebSocketAdapter(correlationIdHeader);
+  public constructor() {
+    this.expressHttpAdapter = new ExpressHttpAdapter();
+    this.expressWsAdapter = new ExpressWebSocketAdapter();
   }
 
   public getFor(route: Route): express.Router {
