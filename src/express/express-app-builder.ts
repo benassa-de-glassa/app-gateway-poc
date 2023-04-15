@@ -1,11 +1,10 @@
-import urljoin from 'url-join';
-
 import express from 'express';
+import urljoin from 'url-join';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { Endpoints, Route, RouterFactory } from './router-factory.js';
 import { ExpressHandler } from './express-handler.js';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import { handleAuthenticationError } from './error-handlers/express-authentication-handler.js';
 import { handleAuthorizationError } from './error-handlers/express-authorization-handler.js';
 import { handleInvalidRequestError } from './error-handlers/invalid-request-handler.js';
