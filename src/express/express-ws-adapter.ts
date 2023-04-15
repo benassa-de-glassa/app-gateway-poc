@@ -30,10 +30,14 @@ export class ExpressWebSocketAdapter {
 
       // When upgrade header contains "websocket" its index is 0
       if (upgradeHeader.indexOf('websocket') === 0) {
-        const socket = await new Promise<WebSocket>(resolve => {
+        const socket = await new Promise<WebSocket>((resolve, reject) => {
           this.wss.handleUpgrade(request, request.socket, Buffer.alloc(0), ws => {
-            this.wss.emit('connection', ws, request);
-            resolve(ws);
+            try {
+              this.wss.emit('connection', ws, request);
+              resolve(ws);
+            } catch (error) {
+              reject(error);
+            }
           });
         });
         socket['clientId'] = request.headers['sec-websocket-key'];

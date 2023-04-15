@@ -14,8 +14,7 @@ interface EndpointCollection {
 enum Consumer {
   app = 'app',
   internal = 'internal',
-  public = 'public',
-  pubsub = 'pubsub'
+  public = 'public'
 }
 
 export class ExpressAppBuilder {
@@ -25,14 +24,12 @@ export class ExpressAppBuilder {
   private readonly defaultPrefix = {
     [Consumer.app]: '',
     [Consumer.internal]: '',
-    [Consumer.public]: '',
-    [Consumer.pubsub]: ''
+    [Consumer.public]: ''
   };
   private readonly defaultMiddleware: { [key in Consumer]: ExpressHandler[] } = {
     [Consumer.internal]: [],
     [Consumer.app]: [],
-    [Consumer.public]: [],
-    [Consumer.pubsub]: []
+    [Consumer.public]: []
   };
 
   public build(): express.Application {
@@ -53,12 +50,56 @@ export class ExpressAppBuilder {
     );
   }
 
+  public withInternalEndpoints(versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    const consumer = Consumer.internal;
+    return this.withDefaultRoute(consumer, versionTag).withEndpoints(
+      consumer,
+      this.defaultPrefix[consumer],
+      versionTag,
+      endpoints
+    );
+  }
+
+  public withPublicEndpoints(versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    const consumer = Consumer.public;
+    return this.withDefaultRoute(consumer, versionTag).withEndpoints(
+      consumer,
+      this.defaultPrefix[consumer],
+      versionTag,
+      endpoints
+    );
+  }
+
   private withDefaultRoute(consumer: Consumer, versionTag: string): ExpressAppBuilder {
     const prefix = this.defaultPrefix[consumer];
     if (this.endpoints[consumer]?.[prefix]?.[versionTag] != null) {
       return this;
     }
     return this.withRoute(consumer, prefix, versionTag, this.defaultMiddleware[consumer]);
+  }
+
+  public withPublicRoute(prefix: string, versionTag: string, middleware: ExpressHandler[]): ExpressAppBuilder {
+    return this.withRoute(Consumer.public, prefix, versionTag, middleware);
+  }
+
+  public withPublicRouteEndpoints(prefix: string, versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    return this.withEndpoints(Consumer.public, prefix, versionTag, endpoints);
+  }
+
+  public withAppRoute(prefix: string, versionTag: string, middleware: ExpressHandler[]): ExpressAppBuilder {
+    return this.withRoute(Consumer.app, prefix, versionTag, middleware);
+  }
+
+  public withAppRouteEndpoints(prefix: string, versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    return this.withEndpoints(Consumer.app, prefix, versionTag, endpoints);
+  }
+
+  public withInternalRoute(prefix: string, versionTag: string, middleware: ExpressHandler[]): ExpressAppBuilder {
+    return this.withRoute(Consumer.internal, prefix, versionTag, middleware);
+  }
+
+  public withInternalRouteEndpoints(prefix: string, versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    return this.withEndpoints(Consumer.internal, prefix, versionTag, endpoints);
   }
 
   private withEndpoints(
