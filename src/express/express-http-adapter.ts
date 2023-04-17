@@ -21,7 +21,7 @@ export class ExpressHttpAdapter {
       response: express.Response,
       next: express.NextFunction
     ) => {
-      if (request.token == null || request.logger == null) {
+      if (request.logger == null) {
         throw new Error('Middleware setup incorrectly');
       }
 
@@ -36,7 +36,7 @@ export class ExpressHttpAdapter {
             urlParameters: request.params,
             queryParameters: request.query
           },
-          request.token,
+          request.token ?? {},
           request.logger
         ));
       } catch (error) {

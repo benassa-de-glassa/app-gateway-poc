@@ -9,14 +9,16 @@ import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilit
 
 import { Endpoints, Route, RouterFactory } from './router-factory';
 import { ExpressHandler } from './express-handler';
-import { handleAuthenticationError } from './error-handlers/express-authentication-handler';
-import { handleAuthorizationError } from './error-handlers/express-authorization-handler';
-import { handleInvalidRequestError } from './error-handlers/invalid-request-handler';
-import { handleNotFoundError } from './error-handlers/not-found-handler';
+import { handleAuthenticationError } from './error-handlers/express-authentication-error-handler';
+import { handleAuthorizationError } from './error-handlers/express-authorization-error-handler';
+import { handleInvalidRequestError } from './error-handlers/express-invalid-request-error-handler';
+import { handleNotFoundError } from './error-handlers/express-not-found-error-handler';
 import { TokenVerifier } from './token-verifiers/token-verifier';
 import { LoggerMiddlewareFactory } from './middleware/logger-middleware-factory';
 import { AuthenticationMiddlewareFactory } from './middleware/authentication-middleware-factory';
 import { CorrelationIdMiddlewareFactory } from './middleware/correlation-id-middleware-factory';
+import { handleUnknownError } from './error-handlers/express-unknown-error-handler';
+import { handleInternalServerError } from './error-handlers/express-internal-error-handler';
 
 interface EndpointCollection {
   [consumer: string]: {
@@ -241,6 +243,8 @@ export class ExpressAppBuilder {
     app.use(handleAuthorizationError);
     app.use(handleNotFoundError);
     app.use(handleInvalidRequestError);
+    app.use(handleInternalServerError);
+    app.use(handleUnknownError);
   }
 
   private validateEndpoints(endpoints: Endpoints): void {

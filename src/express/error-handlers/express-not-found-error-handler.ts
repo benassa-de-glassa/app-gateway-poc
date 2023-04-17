@@ -15,7 +15,7 @@ export function handleNotFoundError(
     return;
   }
   if (request.logger != null) {
-    request.logger.warning('Handling error as 404', error.json());
+    request.logger.debug({ message: 'Handling error as 404', error: error.json() });
   }
   endRequest(response, 404, 'Not Found');
 }

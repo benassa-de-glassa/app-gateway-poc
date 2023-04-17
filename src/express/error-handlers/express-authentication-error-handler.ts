@@ -15,7 +15,7 @@ export function handleAuthenticationError(
     return;
   }
   if (request.logger != null) {
-    request.logger.warning('Handling error as 401', error.json());
+    request.logger.notice({ message: 'Handling error as 401', error: error.json() });
   }
   endRequest(response, 401, 'Unauthorized');
 }

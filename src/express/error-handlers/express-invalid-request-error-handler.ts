@@ -15,7 +15,7 @@ export function handleInvalidRequestError(
     return;
   }
   if (request.logger != null) {
-    request.logger.warning('Handling error as 400', error.json());
+    request.logger.info({ message: 'Handling error as 400', error: error.json() });
   }
   endRequest(response, 400, 'Bad Request');
 }

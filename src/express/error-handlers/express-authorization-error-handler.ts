@@ -15,7 +15,7 @@ export function handleAuthorizationError(
     return;
   }
   if (request.logger != null) {
-    request.logger.warning('Handling error as 403', error.json());
+    request.logger.info({ message: 'Handling error as 403', error: error.json() });
   }
   endRequest(response, 403, 'Forbidden');
 }
