@@ -39,7 +39,6 @@ export class RouterFactory {
         const route = router.route(endpoint);
         const { postHandler, getHandler, patchHandler, putHandler, deleteHandler, streamHandler } = handler;
 
-        console.log('getHandler', getHandler);
         if (getHandler != null) {
           route.get(this.expressHttpAdapter.expressHandler(getHandler, handler));
         }

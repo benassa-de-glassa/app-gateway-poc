@@ -218,7 +218,6 @@ export class ExpressAppBuilder {
 
   private setupFallbackRoute(app: express.Application): void {
     app.all('*', (_request: express.Request, response: express.Response) => {
-      console.log(_request.url);
       response.sendStatus(404);
     });
   }

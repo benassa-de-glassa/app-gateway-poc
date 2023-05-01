@@ -40,7 +40,6 @@ export class ExpressHttpAdapter {
           request.logger
         ));
       } catch (error) {
-        console.log(error);
         next(error);
         return;
       }
