@@ -39,17 +39,23 @@ export class RouterFactory {
         const route = router.route(endpoint);
         const { postHandler, getHandler, patchHandler, putHandler, deleteHandler, streamHandler } = handler;
 
+        console.log('getHandler', getHandler);
+        if (getHandler != null) {
+          route.get(this.expressHttpAdapter.expressHandler(getHandler, handler));
+        }
         if (postHandler != null) {
           route.post(this.expressHttpAdapter.expressHandler(postHandler, handler));
-        } else if (getHandler != null) {
-          route.get(this.expressHttpAdapter.expressHandler(getHandler, handler));
-        } else if (patchHandler != null) {
+        }
+        if (patchHandler != null) {
           route.patch(this.expressHttpAdapter.expressHandler(patchHandler, handler));
-        } else if (putHandler != null) {
+        }
+        if (putHandler != null) {
           route.put(this.expressHttpAdapter.expressHandler(putHandler, handler));
-        } else if (deleteHandler != null) {
+        }
+        if (deleteHandler != null) {
           route.delete(this.expressHttpAdapter.expressHandler(deleteHandler, handler));
-        } else if (streamHandler != null) {
+        }
+        if (streamHandler != null) {
           router.use(endpoint, this.expressWsAdapter.adapt(streamHandler, handler));
         }
       });

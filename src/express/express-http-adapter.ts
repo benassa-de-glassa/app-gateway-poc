@@ -34,12 +34,13 @@ export class ExpressHttpAdapter {
             body: request.body,
             lowercaseHeaders: request.headers,
             urlParameters: request.params,
-            queryParameters: request.query
+            queryParameters: request.query as Record<string, string>
           },
           request.token ?? {},
           request.logger
         ));
       } catch (error) {
+        console.log(error);
         next(error);
         return;
       }

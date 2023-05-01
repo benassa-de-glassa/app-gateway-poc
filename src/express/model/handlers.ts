@@ -3,7 +3,7 @@ import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model/logg
 import { AuthenticationToken } from '../token-verifiers/token-verifier';
 
 export interface QueryParameters {
-  [key: string]: undefined | string | string[] | QueryParameters | QueryParameters[];
+  [key: string]: string;
 }
 
 export interface UrlParameters {

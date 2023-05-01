@@ -51,7 +51,7 @@ export class ExpressWebSocketAdapter {
               body: request.body,
               lowercaseHeaders: request.headers,
               urlParameters: request.params,
-              queryParameters: request.query
+              queryParameters: request.query as Record<string, string>
             },
             request.token,
             request.logger
