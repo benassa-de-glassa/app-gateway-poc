@@ -1,2 +1,2 @@
-import { BaseError } from '@benassa-de-glassa/node-utilities/dist/errors/base-error';
+import { BaseError } from '@benassa-de-glassa/models';
 export class AuthorizationError extends BaseError {}

@@ -1,21 +1,21 @@
 import * as express from 'express';
-import { AuthorizationError } from '../../errors/authorization-error';
 
 import { Logger } from '@benassa-de-glassa/logger';
 import { endRequest } from './end-request';
+import { ValidationError } from '@benassa-de-glassa/validation';
 
-export function handleAuthorizationError(
-  error: AuthorizationError,
+export function handleValidationError(
+  error: ValidationError,
   request: express.Request & { logger?: Logger },
   response: express.Response,
   next: express.NextFunction
 ): void {
-  if (error.constructor !== AuthorizationError) {
+  if (error.constructor !== ValidationError) {
     next(error);
     return;
   }
   if (request.logger != null) {
-    request.logger.info({ message: 'Handling error as 403', error: error.json() });
+    request.logger.info({ message: 'Handling error as 422', error: error.details });
   }
-  endRequest(response, 403, 'Forbidden');
+  endRequest(response, 422, 'Bad Request');
 }

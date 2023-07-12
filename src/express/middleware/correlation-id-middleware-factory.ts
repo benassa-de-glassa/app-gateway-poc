@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-import { IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/id-generator.model';
+import { IdGenerator } from '@benassa-de-glassa/utilities';
 
 import { LoggerEnrichment } from './logger-middleware-factory';
 

@@ -1,8 +1,8 @@
-import { IdentifiedEntity } from '@benassa-de-glassa/node-utilities/dist/models';
-import { DocumentService } from '@benassa-de-glassa/node-utilities/dist/document-service/model/document-service.model';
+import { IdentifiedEntity } from '@benassa-de-glassa/models';
+import { DocumentService } from '@benassa-de-glassa/document-service';
 import { DeleteEndpoint, EndpointResponse, GetEndpoint, PatchEndpoint, PutEndpoint } from '../express/model/handlers';
 import { EndpointRequest } from '../express/model/handlers';
-import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model';
+import { Logger } from '@benassa-de-glassa/logger';
 
 export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
   implements GetEndpoint, PutEndpoint, PatchEndpoint, DeleteEndpoint

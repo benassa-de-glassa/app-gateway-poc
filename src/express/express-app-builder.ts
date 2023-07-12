@@ -1,11 +1,12 @@
 import urlJoin = require('url-join');
 
 import * as express from 'express';
+import helmet from 'helmet';
 import * as cors from 'cors';
 import * as cookieParser from 'cookie-parser';
 
-import { LabelableLogger } from '@benassa-de-glassa/node-utilities/dist/logger/model/logger.model';
-import { UUIDv4IdGenerator } from '@benassa-de-glassa/node-utilities/dist/utilities/id-generators/uuid-v4-id-generator';
+import { LabelableLogger } from '@benassa-de-glassa/logger';
+import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
 
 import { Endpoints, Route, RouterFactory } from './router-factory';
 import { ExpressHandler } from './express-handler';
@@ -19,6 +20,8 @@ import { AuthenticationMiddlewareFactory } from './middleware/authentication-mid
 import { CorrelationIdMiddlewareFactory } from './middleware/correlation-id-middleware-factory';
 import { handleUnknownError } from './error-handlers/express-unknown-error-handler';
 import { handleInternalServerError } from './error-handlers/express-internal-error-handler';
+import { auditLoggingMiddleware } from './middleware/audit-logging-middleware';
+import { handleValidationError } from './error-handlers/express-validation-error-handler';
 
 interface EndpointCollection {
   [consumer: string]: {
@@ -30,6 +33,7 @@ enum Consumer {
   app = 'app',
   internal = 'internal',
   public = 'public',
+  pubsub = 'pubsub',
   api = 'api'
 }
 
@@ -47,12 +51,14 @@ export class ExpressAppBuilder {
     [Consumer.app]: '',
     [Consumer.internal]: '',
     [Consumer.public]: '',
+    [Consumer.pubsub]: '',
     [Consumer.api]: ''
   };
   private readonly defaultMiddleware: { [key in Consumer]: ExpressHandler[] } = {
     [Consumer.internal]: [],
     [Consumer.app]: [],
     [Consumer.public]: [],
+    [Consumer.pubsub]: [],
     [Consumer.api]: []
   };
 
@@ -68,7 +74,8 @@ export class ExpressAppBuilder {
       [Consumer.internal]: [authenticationMiddlewareFactory.getFor(internalTokenVerifier)],
       [Consumer.app]: [authenticationMiddlewareFactory.getFor(appTokenVerifier)],
       [Consumer.api]: [authenticationMiddlewareFactory.getFor(apiTokenVerifier)],
-      [Consumer.public]: []
+      [Consumer.public]: [],
+      [Consumer.pubsub]: []
     };
   }
 
@@ -122,6 +129,15 @@ export class ExpressAppBuilder {
       endpoints
     );
   }
+  public withPubSubEndpoints(versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    const consumer = Consumer.pubsub;
+    return this.withDefaultRoute(consumer, versionTag).withEndpoints(
+      consumer,
+      this.defaultPrefix[consumer],
+      versionTag,
+      endpoints
+    );
+  }
 
   private withDefaultRoute(consumer: Consumer, versionTag: string): ExpressAppBuilder {
     const prefix = this.defaultPrefix[consumer];
@@ -137,6 +153,13 @@ export class ExpressAppBuilder {
 
   public withPublicRouteEndpoints(prefix: string, versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
     return this.withEndpoints(Consumer.public, prefix, versionTag, endpoints);
+  }
+  public withPubSubRoute(prefix: string, versionTag: string, middleware: ExpressHandler[]): ExpressAppBuilder {
+    return this.withRoute(Consumer.pubsub, prefix, versionTag, middleware);
+  }
+
+  public withPubSubRouteEndpoints(prefix: string, versionTag: string, endpoints: Endpoints): ExpressAppBuilder {
+    return this.withEndpoints(Consumer.pubsub, prefix, versionTag, endpoints);
   }
 
   public withAppRoute(prefix: string, versionTag: string, middleware: ExpressHandler[]): ExpressAppBuilder {
@@ -227,7 +250,9 @@ export class ExpressAppBuilder {
     app.enable('trust proxy');
     app.use(this.loggingMiddlewareFactory.get());
     app.use(this.correlationIdMiddlewareFactory.get());
+    app.use(auditLoggingMiddleware);
     app.use(cors({ origin: true }));
+    app.use(helmet());
     app.use(cookieParser());
     app.use(express.json());
     return app;
@@ -243,6 +268,7 @@ export class ExpressAppBuilder {
     app.use(handleAuthorizationError);
     app.use(handleNotFoundError);
     app.use(handleInvalidRequestError);
+    app.use(handleValidationError);
     app.use(handleInternalServerError);
     app.use(handleUnknownError);
   }

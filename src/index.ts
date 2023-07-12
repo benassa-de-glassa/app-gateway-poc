@@ -2,10 +2,10 @@ import { MongoClient } from 'mongodb';
 import * as redis from 'redis';
 import * as winston from 'winston';
 
-import { RedisPublisher } from '@benassa-de-glassa/node-utilities/dist/pub-sub/redis/redis-publisher';
-import { RedisSubscriber } from '@benassa-de-glassa/node-utilities/dist/pub-sub/redis/redis-subscriber';
-import { WinstonLogger } from '@benassa-de-glassa/node-utilities/dist/logger/winston';
-import { MongoDbService } from '@benassa-de-glassa/node-utilities/dist/document-service/mongo-db/mongo-db.service';
+import { RedisPublisher } from '@benassa-de-glassa/pub-sub';
+import { RedisSubscriber } from '@benassa-de-glassa/pub-sub';
+import { WinstonLogger } from '@benassa-de-glassa/logger';
+import { MongoDbService } from '@benassa-de-glassa/document-service';
 
 import { ExpressAppBuilder } from './express/express-app-builder';
 import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-stream-endpoint-handler';
@@ -14,6 +14,7 @@ import { PubSubEventStreamEndpoint } from './endpoints/pub-sub-event-stream-endp
 import { NoopTokenVerifier } from './express/token-verifiers/noop-token-verifier';
 import { DocumentCollectionEndpoint } from './endpoints/document-collection-endpoint';
 import { DocumentResourceEndpoint } from './endpoints/document-resource-endpoint';
+import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
 
 const run = async () => {
   const redisClient: redis.RedisClientType = redis.createClient();
@@ -32,7 +33,12 @@ const run = async () => {
 
   const resourceCollection = mongoDbConnection.db('sample-service').collection<any>('resource');
 
-  const resourceService = new MongoDbService(resourceCollection, { fromDatabase: (doc: any) => doc }, logger);
+  const resourceService = new MongoDbService(
+    resourceCollection,
+    { fromDatabase: (doc: any) => doc },
+    new UUIDv4IdGenerator(),
+    logger
+  );
 
   const app = new ExpressAppBuilder(new NoopTokenVerifier(), new NoopTokenVerifier(), new NoopTokenVerifier(), logger)
     .withAppEndpoints('v1', {

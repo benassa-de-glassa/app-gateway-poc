@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model';
+import { Logger } from '@benassa-de-glassa/logger';
 
 import { endRequest } from './end-request';
 

@@ -1,16 +1,12 @@
-import { IdentifiedEntity } from '@benassa-de-glassa/node-utilities/dist/models';
-import { DocumentService } from '@benassa-de-glassa/node-utilities/dist/document-service/model/document-service.model';
+import { IdentifiedEntity } from '@benassa-de-glassa/models';
 import { EndpointResponse, GetEndpoint, PostEndpoint } from '../express/model/handlers';
 import { EndpointRequest } from '../express/model/handlers';
-import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model';
-import {
-  ScimSyntaxTreeBuilder,
-  ScimFilterStringTokenizer,
-  ScimFilterConditionParser
-} from '@benassa-de-glassa/node-utilities/dist/query/parser/scim';
-import { IdentityAttributeNormalizer } from '@benassa-de-glassa/node-utilities/dist/query/parser/utilities/attribute-normalizers/identity-attribute-normalizer';
-import { TrivialAttributePropertyOracle } from '@benassa-de-glassa/node-utilities/dist/query/parser/utilities/attribute-property-oracles/trivial-property-oracle';
-import { SimpleValueParser } from '@benassa-de-glassa/node-utilities/dist/query/parser/utilities/value-parsers/simple-value-parser';
+import { Logger } from '@benassa-de-glassa/logger';
+import { ScimSyntaxTreeBuilder, ScimFilterStringTokenizer, ScimFilterConditionParser } from '@benassa-de-glassa/query';
+import { IdentityAttributeNormalizer } from '@benassa-de-glassa/query';
+import { TrivialAttributePropertyOracle } from '@benassa-de-glassa/query';
+import { SimpleValueParser } from '@benassa-de-glassa/query';
+import { DocumentService } from '@benassa-de-glassa/document-service';
 
 export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public constructor(private readonly documentService: DocumentService<Document>) {}

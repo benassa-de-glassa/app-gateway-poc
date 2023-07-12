@@ -1,5 +1,5 @@
-import { Observable } from '@benassa-de-glassa/node-utilities/dist/models/observable.model';
-import { Logger } from '@benassa-de-glassa/node-utilities/dist/logger/model/logger.model';
+import { Observable } from '@benassa-de-glassa/models/observable.model';
+import { Logger } from '@benassa-de-glassa/logger/model/logger.model';
 import { AuthenticationToken } from '../token-verifiers/token-verifier';
 
 export interface QueryParameters {

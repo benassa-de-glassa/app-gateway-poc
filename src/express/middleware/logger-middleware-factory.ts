@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-import { LabelableLogger } from '@benassa-de-glassa/node-utilities/dist/logger/model';
+import { LabelableLogger } from '@benassa-de-glassa/logger';
 
 export interface LoggerEnrichment {
   logger: LabelableLogger;
