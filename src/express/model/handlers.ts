@@ -1,6 +1,7 @@
-import { Observable } from '@benassa-de-glassa/models/observable.model';
-import { Logger } from '@benassa-de-glassa/logger/model/logger.model';
+import { Logger } from '@benassa-de-glassa/logger';
+import { Subscriber } from '@benassa-de-glassa/pub-sub';
 import { AuthenticationToken } from '../token-verifiers/token-verifier';
+import { Observable } from 'rxjs';
 
 export interface QueryParameters {
   [key: string]: string;
@@ -30,7 +31,7 @@ export type HttpHandler = (
   request: EndpointRequest,
   token: Record<string, unknown>,
   logger: Logger
-) => Promise<EndpointResponse>;
+) => Observable<EndpointResponse>;
 
 export interface GetEndpoint {
   getHandler: HttpHandler;
@@ -67,4 +68,11 @@ export type DuplexStreamHandler = IncomingStreamHandler & OutgoingStreamHandler;
 
 export interface StreamEndpoint {
   streamHandler: DuplexStreamHandler;
+}
+
+export type PubSubMessageHandler = (message: unknown) => Promise<void>;
+
+export interface PubSubEndpoint {
+  readonly subscriber: Subscriber;
+  pubSubMessageHandler: (message: unknown) => Promise<void>;
 }

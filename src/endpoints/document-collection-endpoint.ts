@@ -7,15 +7,16 @@ import { IdentityAttributeNormalizer } from '@benassa-de-glassa/query';
 import { TrivialAttributePropertyOracle } from '@benassa-de-glassa/query';
 import { SimpleValueParser } from '@benassa-de-glassa/query';
 import { DocumentService } from '@benassa-de-glassa/document-service';
+import { Observable, from, map } from 'rxjs';
 
 export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public constructor(private readonly documentService: DocumentService<Document>) {}
 
-  public async getHandler(
+  public getHandler(
     request: EndpointRequest,
     _token: Record<string, unknown>,
     _logger: Logger
-  ): Promise<EndpointResponse> {
+  ): Observable<EndpointResponse> {
     const filter: string = request.queryParameters.filter;
 
     const filterExpression = new ScimSyntaxTreeBuilder(
@@ -27,20 +28,18 @@ export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> imple
       )
     ).build(filter);
 
-    return {
-      payload: await this.documentService.query(filterExpression, request.queryParameters),
-      code: 200
-    };
+    const response$ = from(this.documentService.query(filterExpression, request.queryParameters));
+
+    return response$.pipe(map(response => ({ payload: response, code: 200 })));
   }
 
-  public async postHandler(
+  public postHandler(
     request: EndpointRequest,
     _token: Record<string, unknown>,
     _logger: Logger
-  ): Promise<EndpointResponse> {
-    return {
-      payload: await this.documentService.create(request.body),
-      code: 200
-    };
+  ): Observable<EndpointResponse> {
+    _logger.info(request.body);
+    const response$ = from(this.documentService.create(request.body));
+    return response$.pipe(map(response => ({ payload: response, code: 200 })));
   }
 }

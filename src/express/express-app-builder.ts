@@ -9,7 +9,6 @@ import { LabelableLogger } from '@benassa-de-glassa/logger';
 import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
 
 import { Endpoints, Route, RouterFactory } from './router-factory';
-import { ExpressHandler } from './express-handler';
 import { handleAuthenticationError } from './error-handlers/express-authentication-error-handler';
 import { handleAuthorizationError } from './error-handlers/express-authorization-error-handler';
 import { handleInvalidRequestError } from './error-handlers/express-invalid-request-error-handler';
@@ -22,6 +21,7 @@ import { handleUnknownError } from './error-handlers/express-unknown-error-handl
 import { handleInternalServerError } from './error-handlers/express-internal-error-handler';
 import { auditLoggingMiddleware } from './middleware/audit-logging-middleware';
 import { handleValidationError } from './error-handlers/express-validation-error-handler';
+import { ExpressHandler } from './express-handler';
 
 interface EndpointCollection {
   [consumer: string]: {
