@@ -21,10 +21,10 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@benassa-de-glassa/document-service": "0.1.0",
-    "@benassa-de-glassa/logger": "0.1.0",
-    "@benassa-de-glassa/pub-sub": "0.1.0",
-    "@benassa-de-glassa/validation": "0.1.0",
+    "@benassa-de-glassa/document-service": "0.1.5",
+    "@benassa-de-glassa/logger": "0.1.5",
+    "@benassa-de-glassa/pub-sub": "0.1.5",
+    "@benassa-de-glassa/validation": "0.1.5",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.18.2",
