@@ -6,7 +6,7 @@ import { RedisPubSub } from '@benassa-de-glassa/pub-sub';
 import { WinstonLogger } from '@benassa-de-glassa/logger';
 import { MongoDbService } from '@benassa-de-glassa/document-service';
 
-import { ExpressAppBuilder } from './express/express-app-builder';
+import { ExpressAppBuilder } from '@benassa-de-glassa/express-server';
 import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-stream-endpoint-handler';
 import { FixedTimeIntervalResponseEndpoint } from './endpoints/fixed-time-interval-response-endpoint-handler';
 import { PubSubEventStreamEndpoint } from './endpoints/pub-sub-event-stream-endpoint';
@@ -52,7 +52,7 @@ const run = async () => {
     })
     .build();
 
-  app.listen(8008, () => 'listening on 8008');
+  app.listen(8008, () => console.log('listening on 8008'));
 };
 
 run();

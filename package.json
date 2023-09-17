@@ -34,10 +34,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@benassa-de-glassa/document-service": "4.0.1",
-    "@benassa-de-glassa/logger": "4.0.1",
-    "@benassa-de-glassa/pub-sub": "4.0.1",
-    "@benassa-de-glassa/validation": "4.0.1",
+    "@benassa-de-glassa/document-service": "4.1.0",
+    "@benassa-de-glassa/express-server": "4.1.0",
+    "@benassa-de-glassa/logger": "4.1.0",
+    "@benassa-de-glassa/pub-sub": "4.1.0",
+    "@benassa-de-glassa/validation": "4.1.0",
     "redis": "^4.6.5",
     "rethinkdb": "^2.4.2",
     "rxjs": "^7.8.0",

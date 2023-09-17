@@ -1,4 +1,4 @@
-import { AuthenticationToken, TokenVerifier } from './token-verifier';
+import { AuthenticationToken, TokenVerifier } from '@benassa-de-glassa/express-server';
 
 export class NoopTokenVerifier implements TokenVerifier {
   public async verify(_token: string): Promise<AuthenticationToken> {
