@@ -17,9 +17,7 @@ export class ExpressWebSocketAdapter {
 
   public adapt(
     duplexStreamHandler: DuplexStreamHandler,
-    pathEndpoints: {
-      streamHandler?: DuplexStreamHandler;
-    }
+    pathEndpoints: { streamHandler?: DuplexStreamHandler }
   ): ExpressWsHandler {
     return async (request: express.Request & Partial<AuthenticationEnrichment> & Partial<LoggerEnrichment>) => {
       const upgradeHeader = (request.headers.upgrade || '').split(',').map(s => s.trim());
