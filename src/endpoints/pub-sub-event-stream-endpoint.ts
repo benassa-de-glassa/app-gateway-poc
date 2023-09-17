@@ -1,5 +1,4 @@
-import { Subscriber } from '@benassa-de-glassa/pub-sub';
-import { Publisher } from '@benassa-de-glassa/pub-sub';
+import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
 import { StreamEndpoint, WebSocketRequest } from '../express/model/handlers';
 import { map } from 'rxjs';
 

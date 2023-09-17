@@ -2,8 +2,7 @@ import { MongoClient } from 'mongodb';
 import * as redis from 'redis';
 import * as winston from 'winston';
 
-import { RedisPublisher } from '@benassa-de-glassa/pub-sub';
-import { RedisSubscriber } from '@benassa-de-glassa/pub-sub';
+import { RedisPubSub } from '@benassa-de-glassa/pub-sub';
 import { WinstonLogger } from '@benassa-de-glassa/logger';
 import { MongoDbService } from '@benassa-de-glassa/document-service';
 
@@ -47,8 +46,8 @@ const run = async () => {
       '/time': new FixedTimeIntervalResponseEndpoint(),
       '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
       '/pub-sub-streaming': new PubSubEventStreamEndpoint(
-        new RedisSubscriber(subscriber, 'test'),
-        new RedisPublisher(redisClient, 'test')
+        new RedisPubSub(subscriber, 'test'),
+        new RedisPubSub(redisClient, 'test')
       )
     })
     .build();
