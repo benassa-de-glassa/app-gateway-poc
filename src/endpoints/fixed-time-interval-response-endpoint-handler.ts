@@ -1,5 +1,5 @@
+import { StreamEndpoint, WebSocketRequest } from '@benassa-de-glassa/express-server';
 import { interval, map } from 'rxjs';
-import { StreamEndpoint, WebSocketRequest } from '../express/model/handlers';
 
 export class FixedTimeIntervalResponseEndpoint implements StreamEndpoint {
   public streamHandler = {

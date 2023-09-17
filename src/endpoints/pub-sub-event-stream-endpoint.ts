@@ -1,5 +1,6 @@
+import { StreamEndpoint, WebSocketRequest } from '@benassa-de-glassa/express-server';
 import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
-import { StreamEndpoint, WebSocketRequest } from '../express/model/handlers';
+
 import { map } from 'rxjs';
 
 export class PubSubEventStreamEndpoint implements StreamEndpoint {

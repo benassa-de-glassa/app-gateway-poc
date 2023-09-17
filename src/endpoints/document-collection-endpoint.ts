@@ -1,6 +1,5 @@
 import { IdentifiedEntity } from '@benassa-de-glassa/models';
-import { EndpointResponse, GetEndpoint, PostEndpoint } from '../express/model/handlers';
-import { EndpointRequest } from '../express/model/handlers';
+
 import { Logger } from '@benassa-de-glassa/logger';
 import { ScimSyntaxTreeBuilder, ScimFilterStringTokenizer, ScimFilterConditionParser } from '@benassa-de-glassa/query';
 import { IdentityAttributeNormalizer } from '@benassa-de-glassa/query';
@@ -8,6 +7,7 @@ import { TrivialAttributePropertyOracle } from '@benassa-de-glassa/query';
 import { SimpleValueParser } from '@benassa-de-glassa/query';
 import { DocumentService } from '@benassa-de-glassa/document-service';
 import { Observable, from, map } from 'rxjs';
+import { GetEndpoint, PostEndpoint, EndpointRequest, EndpointResponse } from '@benassa-de-glassa/express-server';
 
 export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public constructor(private readonly documentService: DocumentService<Document>) {}
