@@ -39,6 +39,6 @@ export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> imple
     _logger: Logger
   ): Observable<EndpointResponse> {
     const response$ = from(this.documentService.create(request.body));
-    return response$.pipe(map(response => ({ payload: response, code: 200 })));
+    return response$.pipe(map(response => ({ payload: response, code: 201 })));
   }
 }
