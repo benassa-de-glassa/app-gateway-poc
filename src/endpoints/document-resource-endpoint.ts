@@ -8,7 +8,8 @@ import {
   EndpointRequest,
   GetEndpoint,
   PatchEndpoint,
-  PutEndpoint
+  PutEndpoint,
+  ResponseType
 } from '@benassa-de-glassa/express-server';
 
 export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
@@ -16,23 +17,43 @@ export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
 {
   public constructor(private readonly documentService: DocumentService<Document>) {}
 
-  public getHandler(request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) {
-    const response$ = from(this.documentService.read(request.urlParameters.resourceId));
-    return response$.pipe(map(response => ({ payload: response, code: 200 })));
+  public get get() {
+    return {
+      responseTypes: new Set([ResponseType.object]),
+      handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
+        const response$ = from(this.documentService.read(request.urlParameters.resourceId));
+        return response$.pipe(map(response => ({ payload: response, code: 200 })));
+      }
+    };
   }
 
-  public patchHandler(request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) {
-    const response$ = from(this.documentService.update(request.urlParameters.resourceId, request.body));
-    return response$.pipe(map(response => ({ payload: response, code: 200 })));
+  public get patch() {
+    return {
+      responseTypes: new Set([ResponseType.object]),
+      handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
+        const response$ = from(this.documentService.update(request.urlParameters.resourceId, request.body));
+        return response$.pipe(map(response => ({ payload: response, code: 200 })));
+      }
+    };
   }
 
-  public putHandler(request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) {
-    const response$ = from(this.documentService.set(request.urlParameters.resourceId, request.body));
-    return response$.pipe(map(response => ({ payload: response, code: 200 })));
+  public get put() {
+    return {
+      responseTypes: new Set([ResponseType.object]),
+      handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
+        const response$ = from(this.documentService.set(request.urlParameters.resourceId, request.body));
+        return response$.pipe(map(response => ({ payload: response, code: 200 })));
+      }
+    };
   }
 
-  public deleteHandler(request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) {
-    const response$ = from(this.documentService.delete(request.urlParameters.resourceId));
-    return response$.pipe(map(response => ({ payload: response, code: 204 })));
+  public get delete() {
+    return {
+      responseTypes: new Set([ResponseType.object]),
+      handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
+        const response$ = from(this.documentService.delete(request.urlParameters.resourceId));
+        return response$.pipe(map(response => ({ payload: response, code: 204 })));
+      }
+    };
   }
 }

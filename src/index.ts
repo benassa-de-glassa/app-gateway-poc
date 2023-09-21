@@ -16,6 +16,9 @@ import { DocumentResourceEndpoint } from './endpoints/document-resource-endpoint
 
 import { NoopTokenVerifier } from './authentication/token-verifiers/noop-token-verifier';
 
+import { RedocEndpoint } from './docs/redoc-endpoint';
+import { SwaggerFileEndpoint } from './endpoints/swagger-file-endpoint';
+
 const run = async () => {
   const redisClient: redis.RedisClientType = redis.createClient();
   const subscriber: redis.RedisClientType = redisClient.duplicate();
@@ -42,8 +45,10 @@ const run = async () => {
 
   const app = new ExpressAppBuilder(new NoopTokenVerifier(), new NoopTokenVerifier(), new NoopTokenVerifier(), logger)
     .withAppEndpoints('v1', {
-      '/resource': new DocumentCollectionEndpoint<any>(resourceService),
-      '/resource/:resourceId': new DocumentResourceEndpoint<any>(resourceService),
+      '/docs/swagger.json': new SwaggerFileEndpoint('src/docs/swagger.json'),
+      '/docs': new RedocEndpoint('API Docs', '/app/v1/docs/swagger.json', new UUIDv4IdGenerator()),
+      '/resources': new DocumentCollectionEndpoint<any>(resourceService),
+      '/resources/:resourceId': new DocumentResourceEndpoint<any>(resourceService),
       '/time': new FixedTimeIntervalResponseEndpoint(),
       '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
       '/pub-sub-streaming': new PubSubEventStreamEndpoint(
