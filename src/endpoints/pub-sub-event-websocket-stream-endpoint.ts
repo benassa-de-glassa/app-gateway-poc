@@ -3,7 +3,7 @@ import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
 
 import { map } from 'rxjs';
 
-export class PubSubEventStreamEndpoint implements StreamEndpoint {
+export class PubSubEventWebsocketStreamEndpoint implements StreamEndpoint {
   public constructor(private readonly eventSubscriber: Subscriber, private readonly eventPublisher: Publisher) {}
 
   public get streamHandler() {

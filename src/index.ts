@@ -2,30 +2,33 @@ import { MongoClient } from 'mongodb';
 import * as redis from 'redis';
 import * as winston from 'winston';
 
-import { RedisPubSub } from '@benassa-de-glassa/pub-sub';
-import { WinstonLogger } from '@benassa-de-glassa/logger';
 import { MongoDbService } from '@benassa-de-glassa/document-service';
-import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
 import { ExpressAppBuilder } from '@benassa-de-glassa/express-server';
+import { WinstonLogger } from '@benassa-de-glassa/logger';
+import { RedisPubSub } from '@benassa-de-glassa/pub-sub';
+import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
 
-import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-stream-endpoint-handler';
-import { FixedTimeIntervalResponseEndpoint } from './endpoints/fixed-time-interval-response-endpoint-handler';
-import { PubSubEventStreamEndpoint } from './endpoints/pub-sub-event-stream-endpoint';
 import { DocumentCollectionEndpoint } from './endpoints/document-collection-endpoint';
 import { DocumentResourceEndpoint } from './endpoints/document-resource-endpoint';
+import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-stream-endpoint-handler';
+import { FixedTimeIntervalResponseEndpoint } from './endpoints/fixed-time-interval-response-endpoint-handler';
+import { PubSubEventWebsocketStreamEndpoint } from './endpoints/pub-sub-event-websocket-stream-endpoint';
 
 import { NoopTokenVerifier } from './authentication/token-verifiers/noop-token-verifier';
 
 import { RedocEndpoint } from './docs/redoc-endpoint';
 import { SwaggerFileEndpoint } from './endpoints/swagger-file-endpoint';
+import { ServerSentEventWebsocketStreamEndpoint } from './endpoints/server-sent-event-websocket-stream-endpoint';
 
 const run = async () => {
-  const redisClient: redis.RedisClientType = redis.createClient();
-  const subscriber: redis.RedisClientType = redisClient.duplicate();
-  await redisClient.connect();
+  const publisher: redis.RedisClientType = redis.createClient();
+  const subscriber: redis.RedisClientType = publisher.duplicate();
+  await publisher.connect();
   await subscriber.connect();
 
-  const mongoDbConnection = new MongoClient('mongodb://localhost:27017');
+  const mongoDbConnection = new MongoClient(
+    'mongodb://mongo:daF2aEGB2b33hDc52HfDGDhDf1faH4B3@roundhouse.proxy.rlwy.net:26570/'
+  );
   await mongoDbConnection.connect();
 
   const logger = new WinstonLogger(
@@ -51,10 +54,11 @@ const run = async () => {
       '/resources/:resourceId': new DocumentResourceEndpoint<any>(resourceService),
       '/time': new FixedTimeIntervalResponseEndpoint(),
       '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
-      '/pub-sub-streaming': new PubSubEventStreamEndpoint(
-        new RedisPubSub(subscriber, 'test'),
-        new RedisPubSub(redisClient, 'test')
-      )
+      '/sse': new ServerSentEventWebsocketStreamEndpoint(
+        new RedisPubSub(subscriber, 'sse'),
+        new RedisPubSub(publisher, 'sse')
+      ),
+      '/ws': new PubSubEventWebsocketStreamEndpoint(new RedisPubSub(subscriber, 'ws'), new RedisPubSub(publisher, 'ws'))
     })
     .build();
 
