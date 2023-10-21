@@ -34,11 +34,13 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@benassa-de-glassa/document-service": "5.1.14-alpha.11",
-    "@benassa-de-glassa/express-server": "5.1.14-alpha.11",
-    "@benassa-de-glassa/logger": "5.1.14-alpha.11",
-    "@benassa-de-glassa/pub-sub": "5.1.14-alpha.11",
-    "@benassa-de-glassa/validation": "5.1.14-alpha.11",
+    "@benassa-de-glassa/document-service": "5.1.14-alpha.18",
+    "@benassa-de-glassa/express-server": "5.1.14-alpha.18",
+    "@benassa-de-glassa/logger": "5.1.14-alpha.18",
+    "@benassa-de-glassa/pub-sub": "5.1.14-alpha.18",
+    "@benassa-de-glassa/validation": "5.1.14-alpha.18",
+    "@faker-js/faker": "^8.2.0",
+    "firebase-admin": "^11.11.0",
     "redis": "^4.6.5",
     "rxjs": "^7.8.0",
     "winston": "^3.8.2"

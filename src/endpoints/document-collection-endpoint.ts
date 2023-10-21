@@ -1,19 +1,23 @@
 import { IdentifiedEntity } from '@benassa-de-glassa/models';
 
-import { Logger } from '@benassa-de-glassa/logger';
-import { ScimSyntaxTreeBuilder, ScimFilterStringTokenizer, ScimFilterConditionParser } from '@benassa-de-glassa/query';
-import { IdentityAttributeNormalizer } from '@benassa-de-glassa/query';
-import { TrivialAttributePropertyOracle } from '@benassa-de-glassa/query';
-import { SimpleValueParser } from '@benassa-de-glassa/query';
 import { DocumentService } from '@benassa-de-glassa/document-service';
-import { Observable, from, map } from 'rxjs';
 import {
-  GetEndpoint,
-  PostEndpoint,
   EndpointRequest,
   EndpointResponse,
+  GetEndpoint,
+  PostEndpoint,
   ResponseType
 } from '@benassa-de-glassa/express-server';
+import { Logger } from '@benassa-de-glassa/logger';
+import {
+  IdentityAttributeNormalizer,
+  ScimFilterConditionParser,
+  ScimFilterStringTokenizer,
+  ScimSyntaxTreeBuilder,
+  SimpleValueParser,
+  TrivialAttributePropertyOracle
+} from '@benassa-de-glassa/query';
+import { Observable, from, map } from 'rxjs';
 
 export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public constructor(private readonly documentService: DocumentService<Document>) {}

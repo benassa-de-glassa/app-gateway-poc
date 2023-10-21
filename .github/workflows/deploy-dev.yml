@@ -1,0 +1,93 @@
+name: Cloud Run Development Deployment
+
+on:
+  workflow_dispatch:
+
+env:
+  DEPLOY_ENVIRONMENT: development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ steps.deploy.outputs.url }}
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    outputs:
+      environment: ${{ env.DEPLOY_ENVIRONMENT }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    env:
+      GAR_LOCATION: gcr.io
+      SERVICE: ${{ github.event.repository.name }}
+      REGION: europe-west1
+
+    steps:
+      - id: 'checkout'
+        name: 'Checkout the repository to an agent that runs the action'
+        uses: 'actions/checkout@v2'
+
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.DEVOPS_SSH_KEY }}
+      - id: 'load-env-vars'
+        name: 'Load environment variables from environment file'
+        run: |
+          cat ".github/environments/${DEPLOY_ENVIRONMENT }.env" >> $GITHUB_ENV
+
+      - id: 'sha'
+        name: 'Sha short'
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - id: 'QEMU'
+        name: 'Set up QEMU'
+        uses: docker/setup-qemu-action@v2
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud Provider'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+
+      - id: 'gcr-login'
+        name: 'Login to Google Cloud Repository'
+        uses: 'docker/login-action@v2'
+        with:
+          username: '_json_key'
+          password: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+          registry: '${{ env.GAR_LOCATION }}'
+
+      - id: 'build'
+        name: 'Build and push to registry'
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.GAR_LOCATION}}/${{ env.PROJECT_ID }}/${{ github.event.repository.name }}:${{ steps.sha.outputs.sha_short}}
+          build-args: |
+            ENVIRONMENT=${{ env.DEPLOY_ENVIRONMENT }}
+          ssh: |
+            default=${{ env.SSH_AUTH_SOCK }}
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - id: 'deploy'
+        if: steps.build.outcome == 'success'
+        name: 'Deploy Cloud Run to GCP'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          service: ${{ github.event.repository.name }}
+          region: ${{ env.REGION }}
+          image: '${{ env.GAR_LOCATION}}/${{ env.PROJECT_ID}}/${{ github.event.repository.name }}:${{ steps.sha.outputs.sha_short}}'
+          flags: --vpc-connector=${{ env.VPC_CONNECTOR }} --vpc-egress=all-traffic --ingress=internal-and-cloud-load-balancing --allow-unauthenticated
+          env_vars: |
+            ENV=${{ env.DEPLOY_ENVIRONMENT }}
+            SERVICE_NAME=${{ github.event.repository.name }}
+            REGION=${{ env.REGION }}
+            PROJECT= ${{ env.PROJECT_ID }}
+          secrets: |
+            FIREBASE_API_KEY=FIREBASE_API_KEY:latest
