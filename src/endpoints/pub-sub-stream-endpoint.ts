@@ -4,7 +4,7 @@ import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
 
 import { filter, map, of } from 'rxjs';
 
-export class ServerSentEventWebsocketStreamEndpoint implements GetEndpoint {
+export class PubSubStreamEndpoint implements GetEndpoint {
   public static readonly PATH = '/sse';
 
   public constructor(private readonly eventSubscriber: Subscriber, private readonly eventPublisher: Publisher) {}

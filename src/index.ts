@@ -11,19 +11,19 @@ import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
 import { DocumentCollectionEndpoint } from './endpoints/document-collection-endpoint';
 import { DocumentResourceEndpoint } from './endpoints/document-resource-endpoint';
 import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-stream-endpoint-handler';
-import { FixedTimeIntervalResponseEndpoint } from './endpoints/fixed-time-interval-response-endpoint-handler';
+import { FixedTimeIntervalStreamEndpoint } from './endpoints/fixed-time-interval-stream-endpoint';
 import { PubSubEventWebsocketStreamEndpoint } from './endpoints/pub-sub-event-websocket-stream-endpoint';
 
 import { NoopTokenVerifier } from './authentication/token-verifiers/noop-token-verifier';
 
 import { RedocEndpoint } from './docs/redoc-endpoint';
 import { SwaggerFileEndpoint } from './endpoints/swagger-file-endpoint';
-import { ServerSentEventWebsocketStreamEndpoint } from './endpoints/server-sent-event-websocket-stream-endpoint';
+import { PubSubStreamEndpoint } from './endpoints/pub-sub-stream-endpoint';
 import { FirestoreService } from '@benassa-de-glassa/document-service';
 import { DocumentCollectionStreamEndpoint } from './endpoints/document-collection-stream-endpoint';
 
-const { initializeApp, cert } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 const serviceAccount = require('../service-account.json');
 
 const run = async () => {
@@ -48,20 +48,6 @@ const run = async () => {
   await publisher.connect();
   await subscriber.connect();
 
-  // mongo setup
-  // const mongoDbConnection = new MongoClient(
-  //   'mongodb://mongo:daF2aEGB2b33hDc52HfDGDhDf1faH4B3@roundhouse.proxy.rlwy.net:26570/'
-  // );
-  // await mongoDbConnection.connect();
-  // const resourceCollection = mongoDbConnection.db('sample-service').collection<any>('resource');
-
-  // const resourceService = new MongoDbService(
-  //   resourceCollection,
-  //   { fromDatabase: (doc: any) => doc },
-  //   new UUIDv4IdGenerator(),
-  //   logger
-  // );
-
   const app = new ExpressAppBuilder(new NoopTokenVerifier(), new NoopTokenVerifier(), new NoopTokenVerifier(), logger)
     .withAppEndpoints('v1', {
       '/docs/swagger.json': new SwaggerFileEndpoint('src/docs/swagger.json'),
@@ -69,12 +55,9 @@ const run = async () => {
       '/resources': new DocumentCollectionEndpoint<any>(resourceService),
       '/resources-stream': new DocumentCollectionStreamEndpoint<any>(resourceService),
       '/resources/:resourceId': new DocumentResourceEndpoint<any>(resourceService),
-      '/time': new FixedTimeIntervalResponseEndpoint(),
+      '/time': new FixedTimeIntervalStreamEndpoint(),
       '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
-      '/sse': new ServerSentEventWebsocketStreamEndpoint(
-        new RedisPubSub(subscriber, 'sse'),
-        new RedisPubSub(publisher, 'sse')
-      ),
+      '/sse': new PubSubStreamEndpoint(new RedisPubSub(subscriber, 'sse'), new RedisPubSub(publisher, 'sse')),
       '/ws': new PubSubEventWebsocketStreamEndpoint(new RedisPubSub(subscriber, 'ws'), new RedisPubSub(publisher, 'ws'))
     })
     .build();
