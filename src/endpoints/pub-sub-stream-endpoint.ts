@@ -26,7 +26,7 @@ export class PubSubStreamEndpoint implements GetEndpoint {
     return {
       responseTypes: new Set([ResponseType.object]),
       handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
-        this.eventPublisher.publish(JSON.stringify(request.body));
+        this.eventPublisher.publish(request.body);
         return of({ payload: undefined, code: 200 });
       }
     };
