@@ -34,12 +34,13 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@benassa-de-glassa/document-service": "5.2.2-alpha.9",
-    "@benassa-de-glassa/express-server": "5.2.2-alpha.9",
-    "@benassa-de-glassa/logger": "5.2.2-alpha.9",
-    "@benassa-de-glassa/pub-sub": "5.2.2-alpha.9",
-    "@benassa-de-glassa/validation": "5.2.2-alpha.9",
+    "@benassa-de-glassa/document-service": "5.2.3-alpha.5",
+    "@benassa-de-glassa/express-server": "5.2.3-alpha.5",
+    "@benassa-de-glassa/logger": "5.2.3-alpha.5",
+    "@benassa-de-glassa/pub-sub": "5.2.3-alpha.5",
+    "@benassa-de-glassa/validation": "5.2.3-alpha.5",
     "@faker-js/faker": "^8.2.0",
+    "express-fileupload": "^1.4.3",
     "firebase-admin": "^11.11.0",
     "redis": "^4.6.5",
     "rxjs": "^7.8.0",

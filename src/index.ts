@@ -24,7 +24,10 @@ import { DocumentCollectionStreamEndpoint } from './endpoints/document-collectio
 
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { FileUploadEndpoint } from './endpoints/file-upload-endpoint';
 const serviceAccount = require('../service-account.json');
+
+const PORT = 8008;
 
 const run = async () => {
   // logger setup
@@ -57,12 +60,13 @@ const run = async () => {
       '/resources/:resourceId': new DocumentResourceEndpoint<any>(resourceService),
       '/time': new FixedTimeIntervalStreamEndpoint(),
       '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
+      '/upload': new FileUploadEndpoint(new RedisPubSub(publisher, 'sse')),
       '/sse': new PubSubStreamEndpoint(new RedisPubSub(subscriber, 'sse'), new RedisPubSub(publisher, 'sse')),
       '/ws': new PubSubEventWebsocketStreamEndpoint(new RedisPubSub(subscriber, 'ws'), new RedisPubSub(publisher, 'ws'))
     })
     .build();
 
-  app.listen(8008, () => console.log('listening on 8008'));
+  app.listen(PORT, () => console.log(`listening on ${PORT}`));
 };
 
 run();
