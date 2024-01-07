@@ -13,7 +13,13 @@ import {
 import { faker } from '@faker-js/faker';
 
 import { from, map } from 'rxjs';
-import { GetEndpoint, ResponseType, EndpointRequest, Endpoint, PostEndpoint } from '../app-builder/model/handlers';
+import {
+  GetEndpoint,
+  ResponseType,
+  EndpointRequest,
+  Endpoint,
+  PostEndpoint
+} from '../app-builder/express/model/handlers';
 
 export class DocumentCollectionStreamEndpoint<T extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public static readonly PATH = '/resources-stream';

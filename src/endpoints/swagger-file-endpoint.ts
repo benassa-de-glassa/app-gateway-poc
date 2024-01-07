@@ -1,5 +1,5 @@
 import { map, of } from 'rxjs';
-import { GetEndpoint, ResponseType } from '../app-builder/model/handlers';
+import { GetEndpoint, ResponseType } from '../app-builder/express/model/handlers';
 
 export class SwaggerFileEndpoint implements GetEndpoint {
   public constructor(private readonly swaggerFilePath: string) {}

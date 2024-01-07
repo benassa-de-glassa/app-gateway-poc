@@ -10,7 +10,7 @@ import {
   DeleteEndpoint,
   ResponseType,
   EndpointRequest
-} from '../app-builder/model/handlers';
+} from '../app-builder/express/model/handlers';
 
 export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
   implements GetEndpoint, PutEndpoint, PatchEndpoint, DeleteEndpoint

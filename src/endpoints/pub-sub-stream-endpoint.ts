@@ -2,7 +2,7 @@ import { Logger } from '@benassa-de-glassa/logger';
 import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
 
 import { filter, map, of } from 'rxjs';
-import { GetEndpoint, ResponseType, EndpointRequest, PostEndpoint } from '../app-builder/model/handlers';
+import { GetEndpoint, ResponseType, EndpointRequest, PostEndpoint } from '../app-builder/express/model/handlers';
 
 export class PubSubStreamEndpoint implements GetEndpoint, PostEndpoint {
   public static readonly PATH = '/sse';

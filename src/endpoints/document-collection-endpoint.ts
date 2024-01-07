@@ -18,7 +18,7 @@ import {
   ResponseType,
   EndpointRequest,
   EndpointResponse
-} from '../app-builder/model/handlers';
+} from '../app-builder/express/model/handlers';
 
 export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public constructor(private readonly documentService: DocumentService<Document>) {}

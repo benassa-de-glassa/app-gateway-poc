@@ -1,7 +1,7 @@
 import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
 
 import { map } from 'rxjs';
-import { StreamEndpoint, WebSocketRequest } from '../app-builder/model/handlers';
+import { StreamEndpoint, WebSocketRequest } from '../app-builder/express/model/handlers';
 
 export class PubSubEventWebsocketStreamEndpoint implements StreamEndpoint {
   public constructor(private readonly eventSubscriber: Subscriber, private readonly eventPublisher: Publisher) {}

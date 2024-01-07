@@ -28,7 +28,7 @@ export class EventStreamResponseHandler implements ResponseHandler {
           this.response.write(`event: message\n`);
           this.response.write(`data: ${JSON.stringify(payload)}\n\n`);
         }),
-        catchError((error) => {
+        catchError(error => {
           this.response.write(`event: error\n`);
           this.response.write(`data: ${JSON.stringify(error)}\n\n`);
           return of();

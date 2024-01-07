@@ -1,6 +1,6 @@
 import { Logger } from '@benassa-de-glassa/logger';
 import { Subscriber } from '@benassa-de-glassa/pub-sub';
-import { AuthenticationToken } from '../token-verifiers/token-verifier';
+import { AuthenticationToken } from '../../token-verifiers/token-verifier';
 import { Observable } from 'rxjs';
 
 export interface QueryParameters {

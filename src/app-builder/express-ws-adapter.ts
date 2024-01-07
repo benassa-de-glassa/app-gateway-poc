@@ -2,7 +2,7 @@ import * as express from 'express';
 import { EMPTY, filter, tap } from 'rxjs';
 import { WebSocket, WebSocketServer } from 'ws';
 
-import { DuplexStreamHandler } from './model/handlers';
+import { DuplexStreamHandler } from './express/model/handlers';
 import { AuthenticationEnrichment } from './express/middleware/authentication-middleware-factory';
 import { LoggerEnrichment } from './express/middleware/logger-middleware-factory';
 

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { ExpressHandler } from './express-handler';
 import { AuthenticationEnrichment } from './middleware/authentication-middleware-factory';
 import { LoggerEnrichment } from './middleware/logger-middleware-factory';
-import { Endpoint, EndpointResponse, HttpHandler, MimeType, ResponseType } from '../model/handlers';
+import { Endpoint, EndpointResponse, HttpHandler, MimeType, ResponseType } from './model/handlers';
 import {
   EventStreamResponseHandler,
   FileResponseHandler,
@@ -15,7 +15,7 @@ import {
   ResponseHandler,
   TextResponseHandler,
   XMLResponseHandler
-} from '../response-handlers';
+} from './response-handlers';
 
 export class ExpressHttpAdapter {
   public expressHandler(

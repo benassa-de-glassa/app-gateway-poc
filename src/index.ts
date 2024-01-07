@@ -51,19 +51,19 @@ const run = async () => {
   await subscriber.connect();
 
   const app = new ExpressAppBuilder(logger)
-    .withEndpoints('/docs/swagger.json', new SwaggerFileEndpoint('src/docs/swagger.json'), [])
-    .withEndpoints('/docs', new RedocEndpoint('API Docs', '/app/v1/docs/swagger.json', new UUIDv4IdGenerator()), [])
-    .withEndpoints('/resources', new DocumentCollectionEndpoint<any>(resourceService), [])
-    .withEndpoints('/resources/:resourceId', new DocumentResourceEndpoint<any>(resourceService), [])
-    .withEndpoints('/time', new FixedTimeIntervalStreamEndpoint(), [])
-    .withEndpoints('/echo', new BroadcastDuplexStreamHandlerEndpoint(), [])
-    .withEndpoints('/upload', new FileUploadEndpoint(new RedisPubSub(publisher, 'sse')), [])
-    .withEndpoints(
+    .withEndpoint('/docs/swagger.json', new SwaggerFileEndpoint('src/docs/swagger.json'), [])
+    .withEndpoint('/docs', new RedocEndpoint('API Docs', '/docs/swagger.json', new UUIDv4IdGenerator()), [])
+    .withEndpoint('/resources', new DocumentCollectionEndpoint<any>(resourceService), [])
+    .withEndpoint('/resources/:resourceId', new DocumentResourceEndpoint<any>(resourceService), [])
+    .withEndpoint('/time', new FixedTimeIntervalStreamEndpoint(), [])
+    .withEndpoint('/echo', new BroadcastDuplexStreamHandlerEndpoint(), [])
+    .withEndpoint('/upload', new FileUploadEndpoint(new RedisPubSub(publisher, 'sse')), [])
+    .withEndpoint(
       '/sse',
       new PubSubStreamEndpoint(new RedisPubSub(subscriber, 'sse'), new RedisPubSub(publisher, 'sse')),
       []
     )
-    .withEndpoints(
+    .withEndpoint(
       '/ws',
       new PubSubEventWebsocketStreamEndpoint(new RedisPubSub(subscriber, 'ws'), new RedisPubSub(publisher, 'ws')),
       []
