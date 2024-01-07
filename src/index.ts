@@ -3,7 +3,7 @@ import * as redis from 'redis';
 import * as winston from 'winston';
 
 // import { MongoDbService } from '@benassa-de-glassa/document-service';
-import { ExpressAppBuilder } from '@benassa-de-glassa/express-server';
+
 import { WinstonLogger } from '@benassa-de-glassa/logger';
 import { RedisPubSub } from '@benassa-de-glassa/pub-sub';
 import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
@@ -25,6 +25,7 @@ import { DocumentCollectionStreamEndpoint } from './endpoints/document-collectio
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { FileUploadEndpoint } from './endpoints/file-upload-endpoint';
+import { AppBuilder } from './app-builder';
 const serviceAccount = require('../service-account.json');
 
 const PORT = 8008;
@@ -51,7 +52,7 @@ const run = async () => {
   await publisher.connect();
   await subscriber.connect();
 
-  const app = new ExpressAppBuilder(new NoopTokenVerifier(), new NoopTokenVerifier(), new NoopTokenVerifier(), logger)
+  const app = new AppBuilder(new NoopTokenVerifier(), new NoopTokenVerifier(), new NoopTokenVerifier(), logger)
     .withAppEndpoints('v1', {
       '/docs/swagger.json': new SwaggerFileEndpoint('src/docs/swagger.json'),
       '/docs': new RedocEndpoint('API Docs', '/app/v1/docs/swagger.json', new UUIDv4IdGenerator()),

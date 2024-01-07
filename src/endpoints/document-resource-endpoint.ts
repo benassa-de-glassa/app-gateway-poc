@@ -4,20 +4,20 @@ import { DocumentService } from '@benassa-de-glassa/document-service';
 import { Logger } from '@benassa-de-glassa/logger';
 import { from, map } from 'rxjs';
 import {
-  DeleteEndpoint,
-  EndpointRequest,
   GetEndpoint,
-  PatchEndpoint,
   PutEndpoint,
-  ResponseType
-} from '@benassa-de-glassa/express-server';
+  PatchEndpoint,
+  DeleteEndpoint,
+  ResponseType,
+  EndpointRequest
+} from '../app-builder/model/handlers';
 
 export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
   implements GetEndpoint, PutEndpoint, PatchEndpoint, DeleteEndpoint
 {
   public constructor(private readonly documentService: DocumentService<Document>) {}
 
-  public get get() {
+  public get GET() {
     return {
       responseTypes: new Set([ResponseType.object]),
       handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
@@ -27,7 +27,7 @@ export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
     };
   }
 
-  public get patch() {
+  public get PATCH() {
     return {
       responseTypes: new Set([ResponseType.object]),
       handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
@@ -37,7 +37,7 @@ export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
     };
   }
 
-  public get put() {
+  public get PUT() {
     return {
       responseTypes: new Set([ResponseType.object]),
       handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
@@ -47,7 +47,7 @@ export class DocumentResourceEndpoint<Document extends IdentifiedEntity>
     };
   }
 
-  public get delete() {
+  public get DELETE() {
     return {
       responseTypes: new Set([ResponseType.object]),
       handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {

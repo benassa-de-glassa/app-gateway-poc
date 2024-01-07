@@ -1,5 +1,5 @@
 import { DocumentSingleCreateService, DocumentStreamQueryService } from '@benassa-de-glassa/document-service';
-import { Endpoint, EndpointRequest, GetEndpoint, ResponseType } from '@benassa-de-glassa/express-server';
+
 import { Logger } from '@benassa-de-glassa/logger';
 import { IdentifiedEntity } from '@benassa-de-glassa/models';
 import {
@@ -13,15 +13,16 @@ import {
 import { faker } from '@faker-js/faker';
 
 import { from, map } from 'rxjs';
+import { GetEndpoint, ResponseType, EndpointRequest, Endpoint, PostEndpoint } from '../app-builder/model/handlers';
 
-export class DocumentCollectionStreamEndpoint<T extends IdentifiedEntity> implements GetEndpoint {
+export class DocumentCollectionStreamEndpoint<T extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public static readonly PATH = '/resources-stream';
 
   public constructor(
     private readonly documentService: DocumentSingleCreateService<T> & DocumentStreamQueryService<T>
   ) {}
 
-  public get get() {
+  public get GET() {
     return {
       responseTypes: new Set([ResponseType.eventStream]),
       handler: (request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {
@@ -43,7 +44,7 @@ export class DocumentCollectionStreamEndpoint<T extends IdentifiedEntity> implem
     };
   }
 
-  public get post(): Endpoint {
+  public get POST(): Endpoint {
     return {
       responseTypes: new Set([ResponseType.object]),
       handler: (_request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {

@@ -1,14 +1,14 @@
 import { DocumentStreamReadService } from '@benassa-de-glassa/document-service';
-import { StreamEndpoint, WebSocketRequest } from '@benassa-de-glassa/express-server';
 
 import { Observable, Subject, filter, switchMap } from 'rxjs';
+import { StreamEndpoint, WebSocketRequest } from '../app-builder/model/handlers';
 
 export class DocumentStreamEndpoint implements StreamEndpoint {
   public constructor(
     private readonly documentStreamService: DocumentStreamReadService<{ id: string; message: string }>
   ) {}
 
-  public get streamHandler() {
+  public get stream() {
     const documentId$ = new Subject<string>();
     const handleMessage = (request: WebSocketRequest) => {
       documentId$.next((request.queryParameters.id as string) ?? '');

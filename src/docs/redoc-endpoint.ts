@@ -1,7 +1,8 @@
 import { map, of } from 'rxjs';
-import { GetEndpoint, ResponseType } from '@benassa-de-glassa/express-server';
+
 import { IdGenerator } from '@benassa-de-glassa/utilities';
 import { redocHtmlTemplate } from './redoc-template';
+import { GetEndpoint, ResponseType } from '../app-builder/model/handlers';
 
 export class RedocEndpoint implements GetEndpoint {
   public constructor(
@@ -10,7 +11,7 @@ export class RedocEndpoint implements GetEndpoint {
     private readonly nonceGenerator: IdGenerator
   ) {}
 
-  public get get() {
+  public get GET() {
     return {
       responseTypes: new Set([ResponseType.html]),
       handler: (_request: any) => {

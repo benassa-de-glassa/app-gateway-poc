@@ -24,6 +24,7 @@
     "@types/supertest": "^2.0.12",
     "@types/url-join": "^4.0.1",
     "@types/ws": "^8.5.4",
+    "@types/xml": "^1.0.11",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.4.0",
@@ -31,19 +32,25 @@
     "nodemon": "^3.0.1",
     "nyc": "^15.1.0",
     "ts-node": "^10.9.1",
+    "tsx": "^4.7.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@benassa-de-glassa/document-service": "5.2.3-alpha.5",
-    "@benassa-de-glassa/express-server": "5.2.3-alpha.5",
-    "@benassa-de-glassa/logger": "5.2.3-alpha.5",
-    "@benassa-de-glassa/pub-sub": "5.2.3-alpha.5",
-    "@benassa-de-glassa/validation": "5.2.3-alpha.5",
+    "@benassa-de-glassa/document-service": "5.3.1-y.13",
+    "@benassa-de-glassa/logger": "5.3.1-y.13",
+    "@benassa-de-glassa/pub-sub": "5.3.1-y.13",
+    "@benassa-de-glassa/validation": "5.3.1-y.13",
     "@faker-js/faker": "^8.2.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "express-fileupload": "^1.4.3",
     "firebase-admin": "^11.11.0",
+    "helmet": "^7.1.0",
     "redis": "^4.6.5",
     "rxjs": "^7.8.0",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "ws": "^8.16.0",
+    "xml": "^1.0.1"
   }
 }

@@ -1,9 +1,9 @@
-import { EndpointRequest, GetEndpoint, ResponseType } from '@benassa-de-glassa/express-server';
 import { Logger } from '@benassa-de-glassa/logger';
 import { filter, interval, map } from 'rxjs';
+import { EndpointRequest, GetEndpoint, ResponseType } from '../app-builder/model/handlers';
 
 export class FixedTimeIntervalStreamEndpoint implements GetEndpoint {
-  public get get() {
+  public get GET() {
     return {
       responseTypes: new Set([ResponseType.eventStream]),
       handler: (_request: EndpointRequest, _token: Record<string, unknown>, _logger: Logger) => {

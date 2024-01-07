@@ -1,10 +1,10 @@
 import { map, of } from 'rxjs';
-import { GetEndpoint, ResponseType } from '@benassa-de-glassa/express-server';
+import { GetEndpoint, ResponseType } from '../app-builder/model/handlers';
 
 export class SwaggerFileEndpoint implements GetEndpoint {
   public constructor(private readonly swaggerFilePath: string) {}
 
-  public get get() {
+  public get GET() {
     return {
       responseTypes: new Set([ResponseType.file]),
       handler: () => {

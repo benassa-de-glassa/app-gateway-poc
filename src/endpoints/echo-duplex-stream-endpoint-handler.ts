@@ -1,8 +1,8 @@
-import { StreamEndpoint, WebSocketRequest } from '@benassa-de-glassa/express-server';
 import { Subject } from 'rxjs';
+import { StreamEndpoint, WebSocketRequest } from '../app-builder/model/handlers';
 
 export class BroadcastDuplexStreamHandlerEndpoint implements StreamEndpoint {
-  public get streamHandler() {
+  public get stream() {
     const broadcastMessage$ = new Subject<string>();
     const handleMessage = (request: WebSocketRequest) => {
       broadcastMessage$.next(request.message);

@@ -1,13 +1,7 @@
 import { IdentifiedEntity } from '@benassa-de-glassa/models';
 
 import { DocumentService } from '@benassa-de-glassa/document-service';
-import {
-  EndpointRequest,
-  EndpointResponse,
-  GetEndpoint,
-  PostEndpoint,
-  ResponseType
-} from '@benassa-de-glassa/express-server';
+
 import { Logger } from '@benassa-de-glassa/logger';
 import {
   IdentityAttributeNormalizer,
@@ -18,11 +12,18 @@ import {
   TrivialAttributePropertyOracle
 } from '@benassa-de-glassa/query';
 import { Observable, from, map } from 'rxjs';
+import {
+  GetEndpoint,
+  PostEndpoint,
+  ResponseType,
+  EndpointRequest,
+  EndpointResponse
+} from '../app-builder/model/handlers';
 
 export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public constructor(private readonly documentService: DocumentService<Document>) {}
 
-  public get get() {
+  public get GET() {
     return {
       responseTypes: new Set([ResponseType.object, ResponseType.eventStream]),
       handler: (
@@ -48,7 +49,7 @@ export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> imple
     };
   }
 
-  public get post() {
+  public get POST() {
     return {
       responseTypes: new Set([ResponseType.object]),
       handler: (

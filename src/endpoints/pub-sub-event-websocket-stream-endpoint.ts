@@ -1,12 +1,12 @@
-import { StreamEndpoint, WebSocketRequest } from '@benassa-de-glassa/express-server';
 import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
 
 import { map } from 'rxjs';
+import { StreamEndpoint, WebSocketRequest } from '../app-builder/model/handlers';
 
 export class PubSubEventWebsocketStreamEndpoint implements StreamEndpoint {
   public constructor(private readonly eventSubscriber: Subscriber, private readonly eventPublisher: Publisher) {}
 
-  public get streamHandler() {
+  public get stream() {
     const clientToSendTo: Set<string> = new Set([]);
 
     const handleMessage = (request: WebSocketRequest) => {
