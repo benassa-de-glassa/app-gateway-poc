@@ -2,7 +2,7 @@ import { map, of } from 'rxjs';
 
 import { IdGenerator } from '@benassa-de-glassa/utilities';
 import { redocHtmlTemplate } from './redoc-template';
-import { GetEndpoint, ResponseType } from '../app-builder/express/model/handlers';
+import { GetEndpoint, ResponseType } from '../app-builder/express-common/model/handlers';
 
 export class RedocEndpoint implements GetEndpoint {
   public constructor(
