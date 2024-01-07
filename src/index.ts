@@ -14,21 +14,19 @@ import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/echo-duplex-st
 import { FixedTimeIntervalStreamEndpoint } from './endpoints/fixed-time-interval-stream-endpoint';
 import { PubSubEventWebsocketStreamEndpoint } from './endpoints/pub-sub-event-websocket-stream-endpoint';
 
-import { NoopTokenVerifier } from './authentication/token-verifiers/noop-token-verifier';
-
-import { RedocEndpoint } from './docs/redoc-endpoint';
-import { SwaggerFileEndpoint } from './endpoints/swagger-file-endpoint';
-import { PubSubStreamEndpoint } from './endpoints/pub-sub-stream-endpoint';
 import { FirestoreService } from '@benassa-de-glassa/document-service';
-import { DocumentCollectionStreamEndpoint } from './endpoints/document-collection-stream-endpoint';
+import { RedocEndpoint } from './docs/redoc-endpoint';
+import { PubSubStreamEndpoint } from './endpoints/pub-sub-stream-endpoint';
+import { SwaggerFileEndpoint } from './endpoints/swagger-file-endpoint';
 
-import { initializeApp, cert } from 'firebase-admin/app';
+import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { ExpressAppBuilder } from './app-builder/express/express-app-builder';
 import { FileUploadEndpoint } from './endpoints/file-upload-endpoint';
-import { AppBuilder } from './app-builder';
+
 const serviceAccount = require('../service-account.json');
 
-const PORT = 8008;
+const PORT = 8013;
 
 const run = async () => {
   // logger setup
@@ -52,19 +50,25 @@ const run = async () => {
   await publisher.connect();
   await subscriber.connect();
 
-  const app = new AppBuilder(new NoopTokenVerifier(), new NoopTokenVerifier(), new NoopTokenVerifier(), logger)
-    .withAppEndpoints('v1', {
-      '/docs/swagger.json': new SwaggerFileEndpoint('src/docs/swagger.json'),
-      '/docs': new RedocEndpoint('API Docs', '/app/v1/docs/swagger.json', new UUIDv4IdGenerator()),
-      '/resources': new DocumentCollectionEndpoint<any>(resourceService),
-      '/resources-stream': new DocumentCollectionStreamEndpoint<any>(resourceService),
-      '/resources/:resourceId': new DocumentResourceEndpoint<any>(resourceService),
-      '/time': new FixedTimeIntervalStreamEndpoint(),
-      '/echo': new BroadcastDuplexStreamHandlerEndpoint(),
-      '/upload': new FileUploadEndpoint(new RedisPubSub(publisher, 'sse')),
-      '/sse': new PubSubStreamEndpoint(new RedisPubSub(subscriber, 'sse'), new RedisPubSub(publisher, 'sse')),
-      '/ws': new PubSubEventWebsocketStreamEndpoint(new RedisPubSub(subscriber, 'ws'), new RedisPubSub(publisher, 'ws'))
-    })
+  const app = new ExpressAppBuilder(logger)
+    .withEndpoints('/docs/swagger.json', new SwaggerFileEndpoint('src/docs/swagger.json'), [])
+    .withEndpoints('/docs', new RedocEndpoint('API Docs', '/app/v1/docs/swagger.json', new UUIDv4IdGenerator()), [])
+    .withEndpoints('/resources', new DocumentCollectionEndpoint<any>(resourceService), [])
+    .withEndpoints('/resources/:resourceId', new DocumentResourceEndpoint<any>(resourceService), [])
+    .withEndpoints('/time', new FixedTimeIntervalStreamEndpoint(), [])
+    .withEndpoints('/echo', new BroadcastDuplexStreamHandlerEndpoint(), [])
+    .withEndpoints('/upload', new FileUploadEndpoint(new RedisPubSub(publisher, 'sse')), [])
+    .withEndpoints(
+      '/sse',
+      new PubSubStreamEndpoint(new RedisPubSub(subscriber, 'sse'), new RedisPubSub(publisher, 'sse')),
+      []
+    )
+    .withEndpoints(
+      '/ws',
+      new PubSubEventWebsocketStreamEndpoint(new RedisPubSub(subscriber, 'ws'), new RedisPubSub(publisher, 'ws')),
+      []
+    )
+
     .build();
 
   app.listen(PORT, () => console.log(`listening on ${PORT}`));

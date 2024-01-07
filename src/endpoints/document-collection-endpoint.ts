@@ -25,7 +25,7 @@ export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> imple
 
   public get GET() {
     return {
-      responseTypes: new Set([ResponseType.object, ResponseType.eventStream]),
+      responseTypes: new Set([ResponseType.object]),
       handler: (
         request: EndpointRequest,
         _token: Record<string, unknown>,

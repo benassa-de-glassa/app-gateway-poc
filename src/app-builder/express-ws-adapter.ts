@@ -3,8 +3,8 @@ import { EMPTY, filter, tap } from 'rxjs';
 import { WebSocket, WebSocketServer } from 'ws';
 
 import { DuplexStreamHandler } from './model/handlers';
-import { AuthenticationEnrichment } from './middleware/authentication-middleware-factory';
-import { LoggerEnrichment } from './middleware/logger-middleware-factory';
+import { AuthenticationEnrichment } from './express/middleware/authentication-middleware-factory';
+import { LoggerEnrichment } from './express/middleware/logger-middleware-factory';
 
 export type ExpressWsHandler = (
   request: express.Request,

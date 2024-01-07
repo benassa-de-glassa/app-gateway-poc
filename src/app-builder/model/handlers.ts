@@ -93,10 +93,3 @@ export type DuplexStreamHandler = IncomingStreamHandler & OutgoingStreamHandler;
 export interface StreamEndpoint {
   stream: DuplexStreamHandler;
 }
-
-export type PubSubMessageHandler = (message: unknown) => Promise<void>;
-
-export interface PubSubEndpoint {
-  readonly subscriber: Subscriber;
-  pubSubMessageHandler: (message: unknown) => Promise<void>;
-}

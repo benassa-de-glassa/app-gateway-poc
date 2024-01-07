@@ -11,7 +11,7 @@ export const auditLoggingMiddleware: ExpressHandler = async (
     meta: 'Audit Log',
     message: 'Handling request',
     method: request.method,
-    url: request.url,
+    url: request.url
   });
   next();
 };
