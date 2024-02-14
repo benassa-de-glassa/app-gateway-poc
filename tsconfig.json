@@ -12,12 +12,12 @@
     "noImplicitThis": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "include": [
     "src",
     "tests"
   ],
-  "esModuleInterop": true
 }

@@ -11,14 +11,9 @@ import {
   SimpleValueParser,
   TrivialAttributePropertyOracle
 } from '@benassa-de-glassa/query';
+
+import { GetEndpoint, PostEndpoint, ResponseType, EndpointRequest, EndpointResponse } from '@benassa-de-glassa/servers';
 import { Observable, from, map } from 'rxjs';
-import {
-  GetEndpoint,
-  PostEndpoint,
-  ResponseType,
-  EndpointRequest,
-  EndpointResponse
-} from '../../app-builder/express-common/model/handlers';
 
 export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> implements GetEndpoint, PostEndpoint {
   public constructor(private readonly documentService: DocumentService<Document>) {}

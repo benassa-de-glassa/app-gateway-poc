@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { StreamEndpoint, WebSocketRequest } from '../../app-builder/express-common/model/handlers';
+import { StreamEndpoint, WebSocketRequest } from '@benassa-de-glassa/servers';
 
 export class BroadcastDuplexStreamHandlerEndpoint implements StreamEndpoint {
   public get stream() {

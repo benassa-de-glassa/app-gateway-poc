@@ -1,7 +1,7 @@
 import { DocumentStreamReadService } from '@benassa-de-glassa/document-service';
 
 import { Observable, Subject, filter, switchMap } from 'rxjs';
-import { StreamEndpoint, WebSocketRequest } from '../../app-builder/express-common/model/handlers';
+import { StreamEndpoint, WebSocketRequest } from '@benassa-de-glassa/servers';
 
 export class DocumentStreamEndpoint implements StreamEndpoint {
   public constructor(

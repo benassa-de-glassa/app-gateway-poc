@@ -38,6 +38,7 @@
   "dependencies": {
     "@benassa-de-glassa/document-service": "6.0.0-beta.5",
     "@benassa-de-glassa/logger": "6.0.0-beta.5",
+    "@benassa-de-glassa/servers": "6.0.0-beta.5",
     "@benassa-de-glassa/pub-sub": "6.0.0-beta.5",
     "@benassa-de-glassa/validation": "6.0.0-beta.5",
     "@faker-js/faker": "^8.2.0",
@@ -47,8 +48,6 @@
     "express-fileupload": "^1.4.3",
     "firebase-admin": "^11.11.0",
     "helmet": "^7.1.0",
-    "redis": "^4.6.5",
-    "rxjs": "^7.8.0",
     "winston": "^3.8.2",
     "ws": "^8.16.0",
     "xml": "^1.0.1"

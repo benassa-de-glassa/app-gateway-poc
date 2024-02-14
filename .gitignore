@@ -41,3 +41,4 @@ dist/**/*
 yarn.lock
 
 service-account.json
+bunfig.toml

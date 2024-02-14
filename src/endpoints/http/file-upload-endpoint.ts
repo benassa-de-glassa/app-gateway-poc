@@ -2,7 +2,7 @@ import fs = require('fs');
 
 import { of } from 'rxjs';
 import { Publisher } from '@benassa-de-glassa/pub-sub';
-import { PostEndpoint, Endpoint, ResponseType } from '../../app-builder/express-common/model/handlers';
+import { PostEndpoint, Endpoint, ResponseType } from '@benassa-de-glassa/servers';
 
 export class FileUploadEndpoint implements PostEndpoint {
   public constructor(private readonly publisher: Publisher) {}
