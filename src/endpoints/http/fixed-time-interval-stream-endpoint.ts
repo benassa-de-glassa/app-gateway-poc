@@ -1,5 +1,6 @@
-import { Logger } from '@benassa-de-glassa/logger';
 import { filter, interval, map } from 'rxjs';
+
+import { Logger } from '@benassa-de-glassa/logger';
 import { EndpointRequest, GetEndpoint, ResponseType } from '@benassa-de-glassa/servers';
 
 export class FixedTimeIntervalStreamEndpoint implements GetEndpoint {

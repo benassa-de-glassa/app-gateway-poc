@@ -20,7 +20,7 @@ export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> imple
 
   public get GET() {
     return {
-      responseTypes: new Set([ResponseType.object]),
+      responseTypes: new Set([ResponseType.eventStream, ResponseType.object]),
       handler: (
         request: EndpointRequest,
         _token: Record<string, unknown>,

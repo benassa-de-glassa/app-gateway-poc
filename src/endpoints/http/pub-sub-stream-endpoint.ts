@@ -1,8 +1,8 @@
+import { filter, map, of } from 'rxjs';
+
 import { Logger } from '@benassa-de-glassa/logger';
 import { Publisher, Subscriber } from '@benassa-de-glassa/pub-sub';
-import { GetEndpoint, PostEndpoint, ResponseType, EndpointRequest } from '@benassa-de-glassa/servers';
-
-import { filter, map, of } from 'rxjs';
+import { EndpointRequest, GetEndpoint, PostEndpoint, ResponseType } from '@benassa-de-glassa/servers';
 
 export class PubSubStreamEndpoint implements GetEndpoint, PostEndpoint {
   public static readonly PATH = '/sse';

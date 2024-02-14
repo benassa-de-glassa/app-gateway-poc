@@ -13,7 +13,7 @@ export class FileUploadEndpoint implements PostEndpoint {
         const file = request.files?.file;
 
         if (file) {
-          fs.writeFileSync(file.name, file.data);
+          fs.writeFileSync('tmp/' + file.name, file.data);
           this.publisher.publish({ name: file.name, size: file.size });
           return of({ payload: { name: file.name, size: file.size }, code: 200 });
         }
