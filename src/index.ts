@@ -20,30 +20,26 @@ import { PubSubEventWebsocketStreamEndpoint } from './endpoints/ws/pub-sub-event
 import { FirestoreService } from '@benassa-de-glassa/document-service';
 import { PubSubStreamEndpoint } from './endpoints/http/pub-sub-stream-endpoint';
 
-import { cert, initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+// import { cert, initializeApp } from 'firebase-admin/app';
+
 import { FileUploadEndpoint } from './endpoints/http/file-upload-endpoint';
 import { RedocEndpoint } from './endpoints/http/redoc-endpoint';
 import { SwaggerFileEndpoint } from './endpoints/http/swagger-file-endpoint';
 
-const serviceAccount = require('../service-account.json');
+import { Firestore } from '@google-cloud/firestore';
 
 const PORT = 8008;
 
 const run = async () => {
   // logger setup
-  // const logger = new WinstonLogger(
-  //   winston.createLogger({ format: winston.format.json() }),
-  //   [{ transport: 'seq', level: 'debug', connectionUri: 'http://localhost:5341' }],
-  //   'sample-service'
-  // );
+  const logger = new WinstonLogger(
+    winston.createLogger({ format: winston.format.json() }),
+    [{ transport: 'seq', level: 'debug', connectionUri: 'http://localhost:5341' }],
+    'sample-service'
+  );
 
-  const logger = new ConsoleLogger('sample-service');
-  //firestore setup
-  initializeApp({
-    credential: cert(serviceAccount)
-  });
-  const db = getFirestore();
+  // firestore setup
+  const db = new Firestore({ keyFilename: './service-account.json' });
   const resourceCollection = db.collection('users');
   const resourceService = new FirestoreService(resourceCollection, new UUIDv4IdGenerator(), logger);
 
