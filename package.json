@@ -36,11 +36,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@benassa-de-glassa/document-service": "6.0.0-beta.5",
-    "@benassa-de-glassa/logger": "6.0.0-beta.5",
-    "@benassa-de-glassa/servers": "6.0.0-beta.5",
-    "@benassa-de-glassa/pub-sub": "6.0.0-beta.5",
-    "@benassa-de-glassa/validation": "6.0.0-beta.5",
+    "@benassa-de-glassa/document-service": "6.0.0-beta.10",
+    "@benassa-de-glassa/logger": "6.0.0-beta.10",
+    "@benassa-de-glassa/servers": "6.0.0-beta.10",
+    "@benassa-de-glassa/pub-sub": "6.0.0-beta.10",
+    "@benassa-de-glassa/validation": "6.0.0-beta.10",
     "@faker-js/faker": "^8.2.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

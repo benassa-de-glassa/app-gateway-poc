@@ -28,6 +28,12 @@ export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> imple
       ): Observable<EndpointResponse> => {
         const filter: string = request.queryParameters.filter;
 
+        const count = Number.isNaN(parseInt(request.queryParameters.count))
+          ? undefined
+          : parseInt(request.queryParameters.count);
+
+        const queryParameters = { ...request.queryParameters, count };
+
         const filterExpression = new ScimSyntaxTreeBuilder(
           new ScimFilterStringTokenizer(),
           new ScimFilterConditionParser(
@@ -37,7 +43,7 @@ export class DocumentCollectionEndpoint<Document extends IdentifiedEntity> imple
           )
         ).build(filter);
 
-        const response$ = from(this.documentService.query(filterExpression, request.queryParameters));
+        const response$ = from(this.documentService.query(filterExpression, queryParameters));
 
         return response$.pipe(map(response => ({ payload: response, code: 200 })));
       }

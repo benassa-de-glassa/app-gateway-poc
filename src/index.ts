@@ -3,11 +3,11 @@ import express from 'express';
 // import { MongoClient } from 'mongodb';
 // import { MongoDbService } from '@benassa-de-glassa/document-service';
 
+import { ExpressHttpAppBuilder, ExpressWsAppBuilder } from '@benassa-de-glassa/servers';
 import * as redis from 'redis';
 import * as winston from 'winston';
-import { ExpressHttpAppBuilder, ExpressWsAppBuilder } from '@benassa-de-glassa/servers';
 
-import { WinstonLogger } from '@benassa-de-glassa/logger';
+import { ConsoleLogger, WinstonLogger } from '@benassa-de-glassa/logger';
 import { RedisPubSub } from '@benassa-de-glassa/pub-sub';
 import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
 
@@ -23,19 +23,22 @@ import { PubSubStreamEndpoint } from './endpoints/http/pub-sub-stream-endpoint';
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { FileUploadEndpoint } from './endpoints/http/file-upload-endpoint';
+import { RedocEndpoint } from './endpoints/http/redoc-endpoint';
+import { SwaggerFileEndpoint } from './endpoints/http/swagger-file-endpoint';
 
 const serviceAccount = require('../service-account.json');
 
-const PORT = 8013;
+const PORT = 8008;
 
 const run = async () => {
   // logger setup
-  const logger = new WinstonLogger(
-    winston.createLogger({ format: winston.format.json() }),
-    [{ transport: 'seq', level: 'debug', connectionUri: 'http://localhost:5341' }],
-    'sample-service'
-  );
+  // const logger = new WinstonLogger(
+  //   winston.createLogger({ format: winston.format.json() }),
+  //   [{ transport: 'seq', level: 'debug', connectionUri: 'http://localhost:5341' }],
+  //   'sample-service'
+  // );
 
+  const logger = new ConsoleLogger('sample-service');
   //firestore setup
   initializeApp({
     credential: cert(serviceAccount)
@@ -51,6 +54,8 @@ const run = async () => {
   await subscriber.connect();
 
   const httpApp = new ExpressHttpAppBuilder(logger)
+    .withEndpoint('/docs', new RedocEndpoint('sample-service', '/docs/swagger.json', new UUIDv4IdGenerator()), [])
+    .withEndpoint('/docs/swagger.json', new SwaggerFileEndpoint('src/docs/swagger.json'), [])
     .withEndpoint('/resources', new DocumentCollectionEndpoint<any>(resourceService), [])
     .withEndpoint('/resources/:resourceId', new DocumentResourceEndpoint<any>(resourceService), [])
     .withEndpoint('/time', new FixedTimeIntervalStreamEndpoint(), [])
