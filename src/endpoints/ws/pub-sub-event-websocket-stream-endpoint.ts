@@ -18,6 +18,7 @@ export class PubSubEventWebsocketStreamEndpoint implements StreamEndpoint {
 
     return {
       sendMessage$: this.eventSubscriber.subscribe().pipe(map(message => ({ targets: clientToSendTo, message }))),
+      broadcastMessage$: this.eventSubscriber.subscribe(),
       handleMessage
     };
   }

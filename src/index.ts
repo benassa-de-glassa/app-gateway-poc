@@ -1,32 +1,24 @@
 import express from 'express';
 
-// import { MongoClient } from 'mongodb';
-// import { MongoDbService } from '@benassa-de-glassa/document-service';
-
-import { ExpressHttpAppBuilder, ExpressWsAppBuilder } from '@benassa-de-glassa/servers';
+import { Firestore } from '@google-cloud/firestore';
 import * as redis from 'redis';
 import * as winston from 'winston';
 
-import { ConsoleLogger, WinstonLogger } from '@benassa-de-glassa/logger';
+import { FirestoreService } from '@benassa-de-glassa/document-service';
+import { WinstonLogger } from '@benassa-de-glassa/logger';
 import { RedisPubSub } from '@benassa-de-glassa/pub-sub';
+import { ExpressHttpAppBuilder, ExpressWsAppBuilder } from '@benassa-de-glassa/servers';
 import { UUIDv4IdGenerator } from '@benassa-de-glassa/utilities';
+import { PubSubStreamEndpoint } from './endpoints/http/pub-sub-stream-endpoint';
 
 import { DocumentCollectionEndpoint } from './endpoints/http/document-collection-endpoint';
 import { DocumentResourceEndpoint } from './endpoints/http/document-resource-endpoint';
-import { FixedTimeIntervalStreamEndpoint } from './endpoints/http/fixed-time-interval-stream-endpoint';
-import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/ws/echo-duplex-stream-endpoint-handler';
-import { PubSubEventWebsocketStreamEndpoint } from './endpoints/ws/pub-sub-event-websocket-stream-endpoint';
-
-import { FirestoreService } from '@benassa-de-glassa/document-service';
-import { PubSubStreamEndpoint } from './endpoints/http/pub-sub-stream-endpoint';
-
-// import { cert, initializeApp } from 'firebase-admin/app';
-
 import { FileUploadEndpoint } from './endpoints/http/file-upload-endpoint';
+import { FixedTimeIntervalStreamEndpoint } from './endpoints/http/fixed-time-interval-stream-endpoint';
 import { RedocEndpoint } from './endpoints/http/redoc-endpoint';
 import { SwaggerFileEndpoint } from './endpoints/http/swagger-file-endpoint';
-
-import { Firestore } from '@google-cloud/firestore';
+import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/ws/echo-duplex-stream-endpoint-handler';
+import { PubSubEventWebsocketStreamEndpoint } from './endpoints/ws/pub-sub-event-websocket-stream-endpoint';
 
 const PORT = 8008;
 
@@ -61,7 +53,6 @@ const run = async () => {
       new PubSubStreamEndpoint(new RedisPubSub(subscriber, 'sse'), new RedisPubSub(publisher, 'sse')),
       []
     )
-
     .build();
 
   const wsApp = new ExpressWsAppBuilder(logger)
