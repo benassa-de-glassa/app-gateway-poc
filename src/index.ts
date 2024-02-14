@@ -20,6 +20,8 @@ import { SwaggerFileEndpoint } from './endpoints/http/swagger-file-endpoint';
 import { BroadcastDuplexStreamHandlerEndpoint } from './endpoints/ws/echo-duplex-stream-endpoint-handler';
 import { PubSubEventWebsocketStreamEndpoint } from './endpoints/ws/pub-sub-event-websocket-stream-endpoint';
 
+import { DocumentNotFoundErrorHandler } from './error-handlers';
+
 const PORT = 8008;
 
 const run = async () => {
@@ -53,6 +55,7 @@ const run = async () => {
       new PubSubStreamEndpoint(new RedisPubSub(subscriber, 'sse'), new RedisPubSub(publisher, 'sse')),
       []
     )
+    .withErrorHandlers(DocumentNotFoundErrorHandler)
     .build();
 
   const wsApp = new ExpressWsAppBuilder(logger)
