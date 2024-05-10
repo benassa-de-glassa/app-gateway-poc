@@ -45,3 +45,5 @@ bunfig.toml
 
 tmp/**/*
 .npmrc
+
+lib
