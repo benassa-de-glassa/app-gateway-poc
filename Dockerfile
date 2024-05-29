@@ -13,10 +13,10 @@ ENV NODE_ENV=development
 FROM base AS dev-install
 
 RUN mkdir -p /temp/dev
-COPY package.json package-lock.json .npmrc /temp/dev/
+COPY package.json package-lock.json /temp/dev/
 RUN ls -la /temp/dev
 RUN cd /temp/dev && npm ci
-RUN rm /temp/dev/.npmrc
+
 
 # run tests
 FROM dev-install as test
@@ -26,9 +26,9 @@ RUN npm run test
 FROM base AS release-install
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
-COPY package.json package-lock.json .npmrc /temp/prod/
+COPY package.json package-lock.json /temp/prod/
 RUN cd /temp/prod && npm ci --omit=dev
-RUN rm /temp/prod/.npmrc
+
 
 # copy  node_modules from temp directory
 # then copy  all (non-ignored) project files into the image
