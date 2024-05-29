@@ -36,6 +36,7 @@ FROM base AS build
 COPY --from=dev-install /temp/dev/node_modules node_modules
 COPY src src
 COPY package.json package-lock.json tsconfig.json ./
+COPY public public 
 
 # build
 RUN ls -la
@@ -49,6 +50,7 @@ FROM base AS release
 COPY --from=release-install /temp/prod/node_modules node_modules
 COPY --from=build /usr/src/app/lib ./lib
 COPY --from=build /usr/src/app/package.json .
+COPY --from=build /usr/src/app/public ./public
 
 # run the app
 EXPOSE 8008/tcp

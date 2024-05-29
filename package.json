@@ -4,7 +4,9 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "start:dev": "npx nodemon",
+    "start:dev": "source .env && npx nodemon",
+    "build": "tsc -p tsconfig.json",
+    "tsc": "tsc",
     "test": "ENV=dev nyc mocha -r ts-node/register \"tests/**/*.test.ts\"",
     "test:file": "ENV=dev mocha -- --watch --extension ts --require ts-node/register"
   },
@@ -23,6 +25,7 @@
     "@types/rethinkdb": "^2.3.17",
     "@types/supertest": "^2.0.12",
     "@types/url-join": "^4.0.1",
+    "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.4",
     "@types/xml": "^1.0.11",
     "chai": "^4.3.6",
@@ -36,20 +39,28 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@benassa-de-glassa/document-service": "6.0.0-beta.34",
-    "@benassa-de-glassa/logger": "6.0.0-beta.34",
-    "@benassa-de-glassa/servers": "6.0.0-beta.34",
-    "@benassa-de-glassa/pub-sub": "6.0.0-beta.34",
-    "@benassa-de-glassa/validation": "6.0.0-beta.34",
-    "@faker-js/faker": "^8.2.0",
-    "@google-cloud/firestore": "^7.3.0",
+    "@benassa-de-glassa/cache": "6.0.0-beta.38",
+    "@benassa-de-glassa/document-service": "6.0.0-beta.38",
+    "@benassa-de-glassa/file-service": "6.0.0-beta.38",
+    "@benassa-de-glassa/http": "6.0.0-beta.38",
+    "@benassa-de-glassa/logger": "6.0.0-beta.38",
+    "@benassa-de-glassa/models": "6.0.0-beta.38",
+    "@benassa-de-glassa/pub-sub": "6.0.0-beta.38",
+    "@benassa-de-glassa/query": "6.0.0-beta.38",
+    "@benassa-de-glassa/servers": "6.0.0-beta.38",
+    "@benassa-de-glassa/utilities": "6.0.0-beta.38",
+    "@benassa-de-glassa/validation": "6.0.0-beta.38",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.3",
     "helmet": "^7.1.0",
+    "jose": "^5.3.0",
+    "rxjs": "7.8.0",
+    "uuid": "^9.0.1",
     "winston": "^3.8.2",
     "ws": "^8.16.0",
-    "xml": "^1.0.1"
+    "xml": "^1.0.1",
+    "zod": "^3.23.8"
   }
 }
