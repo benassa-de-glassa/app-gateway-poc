@@ -12,11 +12,12 @@ export class SessionVerificationHandler {
     private readonly dateService: DateService
   ) {}
 
-  public async handleSessionVerification(token: string): Promise<void> {
+  public async verifySession(token: string): Promise<void> {
     const verified = await this.baseTokenVerifier.verify(token);
     validateSessionToken(verified);
 
     const { sessionId, activityExtensionInMs } = verified.sessionClaims;
+
     const sessionVerifier = new SessionExpirationVerifier(this.cache, this.dateService, activityExtensionInMs);
 
     await sessionVerifier.verify(sessionId);

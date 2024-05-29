@@ -7,24 +7,28 @@ import { ExpressHttpAppBuilder } from '@benassa-de-glassa/servers';
 import { SessionCollectionEndpoint } from './endpoints/http/session-collection-endpoint';
 import { SessionExtensionCollectionEndpoint } from './endpoints/http/session-extension-collection-endpoint';
 import { VerifyEndpoint } from './endpoints/http/verify-endpoint';
+import { appProxy } from './middleware/routing-middleware';
+import { sessionVerifierMiddleware } from './middleware/bearer-token-with-session-verifier-middleware';
 
 const PORT = 8008;
+const DELAY_SERVICE = process.env.DELAY_SERVICE ? process.env.DELAY_SERVICE : 'http://localhost:8009';
 
 const run = async () => {
   const logger = new ConsoleLogger('app-gateway-service');
   //redis setup
   const redisClient: redis.RedisClientType = redis.createClient();
+  await redisClient.connect();
 
   const httpApp = new ExpressHttpAppBuilder(logger)
     .withEndpoint('/verify', new VerifyEndpoint(redisClient), [])
     .withEndpoint('/sessions', new SessionCollectionEndpoint(redisClient), [])
     .withEndpoint('/sessions/:sessionId/extensions', new SessionExtensionCollectionEndpoint(redisClient), [])
-
     .build();
 
   const app = express();
+  app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient), appProxy(DELAY_SERVICE));
 
-  app.use('', httpApp);
+  app.use('/session', httpApp);
   app.listen(PORT, () => console.log(`listening on ${PORT}`));
 };
 
