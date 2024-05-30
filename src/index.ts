@@ -18,7 +18,7 @@ const REDIS_DB_URI = process.env.REDIS_DB_URI ?? 'redis://localhost:6379';
 const run = async () => {
   const logger = new ConsoleLogger('app-gateway-service');
   //redis setup
-  const redisClient: redis.RedisClientType = redis.createClient({ url: process.env.REDIS_DB_URI });
+  const redisClient: redis.RedisClientType = redis.createClient({ url: REDIS_DB_URI });
   await redisClient.connect();
 
   const httpApp = new ExpressHttpAppBuilder(logger)
