@@ -19,12 +19,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create .npmrc for token authentication
-        uses: healthplace/npmrc-registry-login-action@v1.0
-        with:
-          scope: '@benassa-de-glassa'
-          registry: 'https://npm.pkg.github.com'
-          auth-token: ${{secrets.GH_PACKAGE_READ_TOKEN}}
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -32,4 +27,4 @@ jobs:
           push: true
           tags: ghcr.io/benassa-de-glassa/${{ github.event.repository.name }}:latest
           build-args: |
-            PACKAGE_READ_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            NPM_PACKAGE_READ_TOKEN=${{ secrets.GH_PACKAGE_READ_TOKEN }}
