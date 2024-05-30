@@ -68,7 +68,7 @@ const run = async () => {
       res.status(401).send({ error: 'Invalid token' });
     }
   });
-  app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
+  // app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
 
   app.listen(PORT, () => console.log(`listening on ${PORT}`));
 };
