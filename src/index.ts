@@ -10,6 +10,7 @@ import { VerifyEndpoint } from './endpoints/http/verify-endpoint';
 import { appProxy } from './middleware/routing-middleware';
 import { sessionVerifierMiddleware } from './middleware/bearer-token-with-session-verifier-middleware';
 import { AuthenticationErrorHandler } from './errors/authentication-error';
+import { loggingMiddleware } from './middleware/logging-middleware';
 
 const PORT = 8008;
 const DELAY_SERVICE = process.env.DELAY_SERVICE ? process.env.DELAY_SERVICE : 'http://localhost:8009';
@@ -30,7 +31,12 @@ const run = async () => {
     .build();
 
   const app = express();
-  app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
+  app.use(
+    '/app-gateway-service',
+    loggingMiddleware(logger),
+    sessionVerifierMiddleware(redisClient, logger),
+    appProxy(DELAY_SERVICE)
+  );
 
   app.use('', httpApp);
   app.listen(PORT, () => console.log(`listening on ${PORT}`));
