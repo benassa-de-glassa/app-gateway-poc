@@ -12,11 +12,14 @@ ENV NODE_ENV=development
 # this will cache them and speed up future builds
 FROM base AS dev-install
 
-RUN mkdir -p /temp/dev
-COPY package.json package-lock.json /temp/dev/
-RUN ls -la /temp/dev
-RUN cd /temp/dev && npm ci
+ARG NPM_PACKAGE_READ_TOKEN
 
+RUN mkdir -p /temp/dev
+COPY package.json package-lock.json  /temp/dev/
+RUN echo "//npm.pkg.github.com/:_authToken=${NPM_PACKAGE_READ_TOKEN}" > /temp/dev/.npmrc
+RUN cat /temp/dev/.npmrc
+RUN cd /temp/dev && npm ci
+RUN rm /temp/dev/.npmrc
 
 # run tests
 FROM dev-install as test
@@ -25,10 +28,14 @@ RUN npm run test
 
 FROM base AS release-install
 # install with --production (exclude devDependencies)
+ARG NPM_PACKAGE_READ_TOKEN
+
 RUN mkdir -p /temp/prod
 COPY package.json package-lock.json /temp/prod/
+RUN echo NPM_PACKAGE_READ_TOKEN
+RUN echo "//npm.pkg.github.com/:_authToken=${NPM_PACKAGE_READ_TOKEN}" > /temp/prod/.npmrc
 RUN cd /temp/prod && npm ci --omit=dev
-
+RUN rm /temp/prod/.npmrc
 
 # copy  node_modules from temp directory
 # then copy  all (non-ignored) project files into the image
@@ -36,10 +43,8 @@ FROM base AS build
 COPY --from=dev-install /temp/dev/node_modules node_modules
 COPY src src
 COPY package.json package-lock.json tsconfig.json ./
-COPY public public 
 
 # build
-RUN ls -la
 RUN npm run build
 # RUN tsc -p tsconfig.json
 USER node
@@ -50,7 +55,6 @@ FROM base AS release
 COPY --from=release-install /temp/prod/node_modules node_modules
 COPY --from=build /usr/src/app/lib ./lib
 COPY --from=build /usr/src/app/package.json .
-COPY --from=build /usr/src/app/public ./public
 
 # run the app
 EXPOSE 8008/tcp
