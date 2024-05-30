@@ -25,7 +25,6 @@ const run = async () => {
   await redisClient.connect();
 
   const app = express();
-  app.all('/app-gateway-service/*', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
   app.post('/verify', async (req, res, _next) => {
     const cache: Cache<string> = new RedisCache<string>(redisClient);
     const baseTokenVerifier: TokenVerifier = new SessionTokenDecodeVerifier();
@@ -44,7 +43,7 @@ const run = async () => {
     }
   });
 
-  app.post('/sessions', async (_req, res, _next) => {
+  app.post('/sessions/', async (_req, res, _next) => {
     const cache: Cache<string> = new RedisCache<string>(redisClient);
     const sessionIdGenerator = new UUIDv4IdGenerator();
     const dateService = new CurrentDateService();
@@ -69,6 +68,7 @@ const run = async () => {
       res.status(401).send({ error: 'Invalid token' });
     }
   });
+  app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
 
   app.listen(PORT, () => console.log(`listening on ${PORT}`));
 };
