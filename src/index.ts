@@ -13,10 +13,16 @@ import { sessionVerifierMiddleware } from './middleware/bearer-token-with-sessio
 const PORT = 8008;
 const DELAY_SERVICE = process.env.DELAY_SERVICE ? process.env.DELAY_SERVICE : 'http://localhost:8009';
 
+const { REDIS_DB_URI } = process.env;
+
+if (!REDIS_DB_URI) {
+  throw new Error('REDIS_DB_URI is not defined');
+}
+
 const run = async () => {
   const logger = new ConsoleLogger('app-gateway-service');
   //redis setup
-  const redisClient: redis.RedisClientType = redis.createClient();
+  const redisClient: redis.RedisClientType = redis.createClient({ url: process.env.REDIS_DB_URI });
   await redisClient.connect();
 
   const httpApp = new ExpressHttpAppBuilder(logger)
