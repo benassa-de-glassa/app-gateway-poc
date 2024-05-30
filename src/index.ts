@@ -32,7 +32,7 @@ const run = async () => {
   const app = express();
   app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
 
-  app.use('', httpApp);
+  app.use('/', httpApp);
   app.listen(PORT, () => console.log(`listening on ${PORT}`));
 };
 
