@@ -10,16 +10,15 @@ import { SessionTokenDecodeVerifier } from './authentication/token-verifiers/ses
 import { SessionCreationHandler } from './handlers/session-creation-handler';
 import { SessionExtensionHandler } from './handlers/session-extension-handler';
 import { SessionVerificationHandler } from './handlers/session-verification-handler';
-import { sessionVerifierMiddleware } from './middleware/bearer-token-with-session-verifier-middleware';
-import { appProxy } from './middleware/routing-middleware';
 
 const PORT = 8008;
-const DELAY_SERVICE = process.env.DELAY_SERVICE ? process.env.DELAY_SERVICE : 'http://localhost:8009';
+// const DELAY_SERVICE = process.env.DELAY_SERVICE ? process.env.DELAY_SERVICE : 'http://localhost:8009';
 
 const REDIS_DB_URI = process.env.REDIS_DB_URI ?? 'redis://localhost:6379';
 
 const run = async () => {
   const logger = new ConsoleLogger('app-gateway-service');
+  logger.info('Starting app-gateway-service');
   //redis setup
   const redisClient: redis.RedisClientType = redis.createClient({ url: REDIS_DB_URI });
   await redisClient.connect();
