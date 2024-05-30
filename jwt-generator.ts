@@ -3,7 +3,7 @@ import * as jose from 'jose';
 
 const payload = {
   sessionClaims: {
-    sessionId: 'af44e24d-3d7a-43a8-adf0-999a82f5e7e0',
+    sessionId: 'a7d4b2ed-93d8-4f87-824d-2bb06aefa683',
     activityExtensionInMs: 10 * 60 * 1000
   }
 };
