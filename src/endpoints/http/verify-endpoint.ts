@@ -7,6 +7,7 @@ import { from, map } from 'rxjs';
 import { SessionTokenDecodeVerifier } from '../../authentication/token-verifiers/session-token-decode-verifier';
 import { TokenVerifier } from '../../authentication/token-verifiers/token-verifier';
 import { SessionVerificationHandler } from '../../handlers/session-verification-handler';
+import { AuthenticationError } from '../../errors/authentication-error';
 
 export class VerifyEndpoint implements PostEndpoint {
   public constructor(private readonly redisClient: RedisClientType) {}
@@ -21,7 +22,7 @@ export class VerifyEndpoint implements PostEndpoint {
         const handler = new SessionVerificationHandler(baseTokenVerifier, cache, new CurrentDateService());
         const authorizationHeader = request.lowercaseHeaders.authorization;
         if (typeof authorizationHeader !== 'string') {
-          return from(Promise.reject(new Error('Invalid token')));
+          return from(Promise.reject(new AuthenticationError('Invalid token')));
         }
         const token = authorizationHeader.split(' ')[1];
         return from(handler.verifySession(token)).pipe(map(token => ({ payload: token, code: 200 })));

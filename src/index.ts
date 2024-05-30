@@ -9,6 +9,7 @@ import { SessionExtensionCollectionEndpoint } from './endpoints/http/session-ext
 import { VerifyEndpoint } from './endpoints/http/verify-endpoint';
 import { appProxy } from './middleware/routing-middleware';
 import { sessionVerifierMiddleware } from './middleware/bearer-token-with-session-verifier-middleware';
+import { AuthenticationErrorHandler } from './errors/authentication-error';
 
 const PORT = 8008;
 const DELAY_SERVICE = process.env.DELAY_SERVICE ? process.env.DELAY_SERVICE : 'http://localhost:8009';
@@ -25,12 +26,13 @@ const run = async () => {
     .withEndpoint('/verify', new VerifyEndpoint(redisClient), [])
     .withEndpoint('/sessions', new SessionCollectionEndpoint(redisClient), [])
     .withEndpoint('/sessions/:sessionId/extensions', new SessionExtensionCollectionEndpoint(redisClient), [])
+    .withErrorHandlers(AuthenticationErrorHandler)
     .build();
 
   const app = express();
-  app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient), appProxy(DELAY_SERVICE));
+  app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
 
-  app.use('/session', httpApp);
+  app.use('', httpApp);
   app.listen(PORT, () => console.log(`listening on ${PORT}`));
 };
 
