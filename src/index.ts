@@ -30,7 +30,7 @@ const run = async () => {
     .build();
 
   const app = express();
-  app.use('/app-gateway-service', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
+  app.all('/app-gateway-service/*', sessionVerifierMiddleware(redisClient, logger), appProxy(DELAY_SERVICE));
   app.use('/session-management', httpApp);
 
   app.listen(PORT, () => console.log(`listening on ${PORT}`));
