@@ -5,7 +5,8 @@ import { SessionTokenDecodeVerifier } from '../authentication/token-verifiers/se
 import { RedisCache } from '@benassa-de-glassa/cache';
 import { CurrentDateService } from '@benassa-de-glassa/utilities';
 export const sessionVerifierMiddleware =
-  (redis: redis.RedisClientType) => async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  (redis: redis.RedisClientType) =>
+  async (req: express.Request, _res: express.Response, next: express.NextFunction) => {
     const baseTokenVerifier = new SessionTokenDecodeVerifier();
     const cache = new RedisCache<string>(redis);
 
