@@ -3,8 +3,8 @@ import * as jose from 'jose';
 
 const payload = {
   sessionClaims: {
-    sessionId: 'a7d4b2ed-93d8-4f87-824d-2bb06aefa683',
-    activityExtensionInMs: 10 * 60 * 1000
+    sessionId: '389d7589-21e3-48d2-a6f7-309405e36193',
+    activityExtensionInMs: 10 * 60 * 10000
   }
 };
 
